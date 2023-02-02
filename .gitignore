@@ -1,0 +1,28 @@
+# VSCode workspace settings
+.vscode
+
+# Latex/latexmk build artifacts
+**/*.aux
+**/*.bbl
+**/*.blg
+**/*.fdb_latexmk
+**/*.fls
+**/*.log
+**/*.synctex.gz
+**/*.out
+**/*.toc
+
+# Ignore PDFs as well; these will be uploaded to the releases section on GitHub
+# as the proposal and thesis drafts become more complete
+**/*.pdf
+
+# Python cache artifacts
+source/**/__pycache__
+source/**/*.pyc
+
+# VS Code workspace settings
+.vscode
+
+# Corpora and debugging files
+source/*.txt
+source/*.out
