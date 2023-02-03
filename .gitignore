@@ -26,3 +26,6 @@ source/**/*.pyc
 # Corpora and debugging files
 source/*.txt
 source/*.out
+
+# Manifest files (typically system dependent)
+**/*.json

@@ -15,12 +15,10 @@ References:
 -----------
 [0] https://arxiv.org/abs/1904.03288
 """
-import nemo.collections.asr as nemo_asr
-import pytorch_lightning as pl
-from omegaconf import DictConfig
 from model import Model
 from nemo.collections.asr.models import EncDecCTCModel
 from typing import *
+
 
 class PretrainedJasper(Model):
     """
@@ -31,66 +29,57 @@ class PretrainedJasper(Model):
     Model name: stt_en_jasper_10x5dr
     Tokenizer: none
     """
+
     def __init__(
         self,
-        training_manifest_path: str,
-        testing_manifest_path: str,
-        validation_manifest_path: str,
         pretrained_model_name: str = "stt_en_jasper_10x5dr",
-        name: str = "none"
+        name: str = "none",
     ):
         # create model
         self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
         # call super constructor to finish initializing the object
         super(PretrainedJasper, self).__init__(name)
 
-    def setup():
-        # get config; modify if needed
+    def fit(self):
+        """
+        Overriding since the goal of this class is just to establish a baseline WER
+        before fine tuning or training from scratch
+        """
         pass
 
-    def fit():
-        pass
-
-    def test():
-        pass
 
 class PretrainedFineTunedJasper(PretrainedJasper):
     def __init__(
         self,
-        training_manifest_path: str,
-        testing_manifest_path: str,
-        validation_manifest_path: str,
         pretrained_model_name: str = "stt_en_jasper_10x5dr",
-        name: str = "none"
+        name: str = "none",
     ):
+        # call super constructor to initialize the object
         super(PretrainedFineTunedJasper, self).__init__(pretrained_model_name, name)
 
-    def setup():
-        pass
+        self.load_config(config_path="config/jasper_10x5dr.yaml")
 
-    def fit():
-        pass
+        # setup the model for training (dataloaders and pl trainer)
+        self.setup(
+            training_manifest_path="manifests/train_manifest.json",
+            testing_manifest_path="manifests/test_manifest.json",
+            validation_manifest_path="manifests/validation_manifest.json",
+            accelerator="gpu",
+            max_epochs=300,
+        )
 
-    def test():
-        pass
 
 class RandomInitJasper(Model):
-    def __init__(
-        self,
-        config: Union
-        training_manifest_path: str,
-        testing_manifest_path: str,
-        validation_manifest_path: str,
-        name: str = "none"
-    ):
-        self._model = EncDecCTCModel()
+    def __init__(self, name: str = "none"):
+        self.load_config(config_path="config/jasper_10x5dr.yaml")
+        self._model = EncDecCTCModel(self._config)
         super(RandomInitJasper, self).__init__(name)
 
-    def setup():
-        pass
-
-    def fit():
-        pass
-
-    def test():
-        pass
+        # setup the model for training (dataloaders and pl trainer)
+        self.setup(
+            training_manifest_path="manifests/train_manifest.json",
+            testing_manifest_path="manifests/test_manifest.json",
+            validation_manifest_path="manifests/validation_manifest.json",
+            accelerator="gpu",
+            max_epochs=300,
+        )

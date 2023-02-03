@@ -53,7 +53,9 @@ class ATCOSimData(Data):
         hesitation_tokens = re.compile(r"(ah|hm|ahm|yeah|aha|nah|ohh)")
         non_english_tags = re.compile(r"(<FL>.</FL>)")
 
-        for audio_path, transcript_path in zip(self._audio_paths, self._transcript_paths):
+        for audio_path, transcript_path in zip(
+            self._audio_paths, self._transcript_paths
+        ):
             # read data from file
             with open(transcript_path, "r") as f:
                 text = "".join([t.strip() for t in f.readlines()])
@@ -80,11 +82,13 @@ class ATCOSimData(Data):
             # some transcripts are empty after removing transcriber
             # annotations
             if text != "":
-                data.append({
-                    "audio_filepath": audio_path,
-                    "duration": librosa.get_duration(filename=audio_path),
-                    "text": text
-                })
+                data.append(
+                    {
+                        "audio_filepath": audio_path,
+                        "duration": librosa.get_duration(filename=audio_path),
+                        "text": text,
+                    }
+                )
 
         ATCOSimData.data = data
         return data

@@ -24,7 +24,7 @@ class ATCO2SimData(Data):
     transcription_corrections = [
         ("your're", "you're"),
         ("affirmatif", "affirmative"),
-        ("zurrich", "zurich")
+        ("zurrich", "zurich"),
     ]
 
     def __init__(self, data_root: str, **kwargs):
@@ -127,11 +127,13 @@ class ATCO2SimData(Data):
                     text = text.strip()
 
                     if text != "":
-                        data.append({
-                            "audio_filepath": audio_path,
-                            "duration": librosa.get_duration(filename=audio_path),
-                            "text": text
-                        })
+                        data.append(
+                            {
+                                "audio_filepath": audio_path,
+                                "duration": librosa.get_duration(filename=audio_path),
+                                "text": text,
+                            }
+                        )
 
         ATCO2SimData.data = data
         return data

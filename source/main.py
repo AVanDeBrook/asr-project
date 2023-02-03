@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 from typing import *
 from data import Data, ATCCompleteData, ATCOSimData, ATCO2SimData, ZCUATCDataset
+from models import Model, PretrainedFineTunedJasper, PretrainedJasper, RandomInitJasper
 from matplotlib.figure import Figure
 
 if __name__ == "__main__":
@@ -42,7 +43,10 @@ if __name__ == "__main__":
 
         # concatenate individual datasets into one larger dataset
         concat_dataset.extend(
-            data_analysis.dump_manifest(f"{data_analysis.name.replace(' ', '_')}_manifest.json", return_list=True)
+            data_analysis.dump_manifest(
+                f"{data_analysis.name.replace(' ', '_')}_manifest.json",
+                return_list=True,
+            )
         )
 
     # dump to a manifest
@@ -54,3 +58,23 @@ if __name__ == "__main__":
     print(f"Total samples: {len(concat_dataset)}")
     print(f"Total unique tokens (across all datasets): {num_unique_tokens}")
     print(f"Total tokens: {num_tokens}")
+
+    """ Model Training/Testing """
+
+    # name, model pairs
+    models: Dict[str, Model] = {
+        # Jasper models
+        "jasper_pretrained": PretrainedJasper,
+        "jasper_finetuned": PretrainedFineTunedJasper,
+        "jasper_random_init": RandomInitJasper,
+        # QuartzNet models
+    }
+
+    # TODO
+    for name, model in models.items():
+        # create model
+        # load config
+        # setup dataloaders
+        # train
+        # test
+        pass
