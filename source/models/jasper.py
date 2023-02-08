@@ -19,6 +19,7 @@ from models import Model
 from nemo.collections.asr.models import EncDecCTCModel
 from typing import *
 from omegaconf import DictConfig
+from copy import deepcopy
 
 
 class PretrainedJasper(Model):
@@ -36,8 +37,15 @@ class PretrainedJasper(Model):
         pretrained_model_name: str = "stt_en_jasper10x5dr",
         checkpoint_name: str = "none",
     ):
+        self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
+
+        self._config["model"]["test_ds"] = deepcopy(self._config["model"]["validation_ds"])
+        self._config["model"]["test_ds"]["manifest_filepath"] = "manifests/test_manifest.json"
+
         # create model
-        self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
+        self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
+        self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
+
         # call super constructor to finish initializing the object
         super(PretrainedJasper, self).__init__(checkpoint_name)
 

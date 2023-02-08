@@ -23,6 +23,7 @@ from models import Model
 from nemo.collections.asr.models import EncDecCTCModel
 from typing import *
 from omegaconf import DictConfig
+from copy import deepcopy
 
 
 class PretrainedQuartzNet(Model):
@@ -40,7 +41,13 @@ class PretrainedQuartzNet(Model):
         pretrained_model_name: str = "QuartzNet15x5Base-En",
         checkpoint_name: str = "none",
     ):
-        self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
+        self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
+        self._config["model"]["test_ds"] = deepcopy(self._config["model"]["validation_ds"])
+        self._config["model"]["test_ds"]["manifest_filepath"] = "manifests/test_manifest.json"
+
+        self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
+        self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
+
         super(PretrainedQuartzNet, self).__init__(checkpoint_name)
 
     def fit(self):

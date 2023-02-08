@@ -115,7 +115,7 @@ if __name__ == "__main__":
     model_wers = []
     for name, model in models.items():
         # create model
-        model: Model = model(name=name)
+        model: Model = model(checkpoint_name=name)
         # train
         model.fit()
         # test
