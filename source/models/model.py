@@ -1,11 +1,11 @@
 import logging
 import os
 import pytorch_lightning as pl
+import yaml
 from copy import deepcopy
 from typing import *
 from nemo.collections.asr.models import EncDecCTCModel
 from omegaconf import DictConfig
-from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class Model(object):
         # model should be set up by the implementing class
         assert self._model is not None
 
-    def load_config(self, config_path: str) -> DictConfig:
+    def load_config(self, config_path: str) -> Dict:
         """
         Loads the model config file from the specified path.
 
@@ -53,9 +53,8 @@ class Model(object):
         ), f"Could not find config file: '{config_path}'"
 
         with open(config_path, "r", encoding="utf-8") as f:
-            config = YAML(typ="safe").load(f)
+            config = yaml.load(stream=f)
 
-        self._config = DictConfig(config)
         return config
 
     def setup(
@@ -178,32 +177,18 @@ class Model(object):
 
         `validation_manifest_path`: Path to the validation manifest
         """
-        assert os.path.exists(
-            training_manifest_path
-        ), f"Could not find training manifest path: '{training_manifest_path}'"
-        assert os.path.exists(
-            testing_manifest_path
-        ), f"Could not find testing manifest path: '{testing_manifest_path}'"
-        assert os.path.exists(
-            validation_manifest_path
-        ), f"Could not find validation manifest path: '{validation_manifest_path}'"
-
         # training config setup
-        self._config["model"]["train_ds"]["manifest_filepath"] = training_manifest_path
         self._model.setup_training_data(self._config["model"]["train_ds"])
 
         # validation config setup
-        self._config["model"]["validation_ds"][
-            "manifest_filepath"
-        ] = validation_manifest_path
-        self._model.setup_validation_data(self._config["model"]["validation_ds"])
+        self._model.setup_validation_data(DictConfig(self._config["model"]["validation_ds"]))
 
         # testing config setup
         self._config["model"]["test_ds"] = deepcopy(
             self._config["model"]["validation_ds"]
         )
         self._config["model"]["test_ds"]["manifest_filepath"] = testing_manifest_path
-        self._model.setup_test_data(self._config["model"]["test_ds"])
+        self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
 
     def _setup_training(self, **kwargs) -> None:
         """

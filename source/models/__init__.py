@@ -1,7 +1,7 @@
 import logging
 import torch
-from model import Model
-from jasper import PretrainedJasper, PretrainedFineTunedJasper, RandomInitJasper
+from .model import Model
+from .jasper import PretrainedJasper, PretrainedFineTunedJasper, RandomInitJasper
 
 # from transformers import *
 

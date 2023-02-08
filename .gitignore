@@ -29,3 +29,7 @@ source/*.out
 
 # Manifest files (typically system dependent)
 **/*.json
+
+# NeMo checkpoints and tensorboard logs
+source/checkpoints
+source/lightning_logs

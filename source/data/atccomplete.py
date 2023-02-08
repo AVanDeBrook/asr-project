@@ -154,18 +154,23 @@ class ATCCompleteData(Data):
             converted_file = str(sphere_file).replace(".sph", ".wav")
             if sphere_file.exists():
                 # program and arguments to run to reformat/resample the sphere file
-                ffmpeg_options = [
-                    "ffmpeg",
-                    "-y",
-                    "-i",
-                    str(sphere_file),
-                    "-ar",
+                process = [
+                    # "ffmpeg",
+                    # "-y",
+                    # "-i",
+                    # str(sphere_file),
+                    # "-ar",
+                    # "16000",
+                    # converted_file,
+                    "sox",
+                    f"{sphere_file}",
+                    "-r",
                     "16000",
-                    converted_file,
+                    f"{converted_file}"
                 ]
                 # for debugging
                 # print(" ".join(ffmpeg_options))
-                subprocess.run(ffmpeg_options)
+                subprocess.run(process)
                 converted_paths.append(converted_file)
 
         return converted_paths

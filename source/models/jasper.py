@@ -15,10 +15,10 @@ References:
 -----------
 [0] https://arxiv.org/abs/1904.03288
 """
-from model import Model
+from models import Model
 from nemo.collections.asr.models import EncDecCTCModel
 from typing import *
-
+from omegaconf import DictConfig
 
 class PretrainedJasper(Model):
     """
@@ -32,7 +32,7 @@ class PretrainedJasper(Model):
 
     def __init__(
         self,
-        pretrained_model_name: str = "stt_en_jasper_10x5dr",
+        pretrained_model_name: str = "stt_en_jasper10x5dr",
         name: str = "none",
     ):
         # create model
@@ -48,16 +48,19 @@ class PretrainedJasper(Model):
         pass
 
 
-class PretrainedFineTunedJasper(PretrainedJasper):
+class PretrainedFineTunedJasper(Model):
     def __init__(
         self,
-        pretrained_model_name: str = "stt_en_jasper_10x5dr",
+        pretrained_model_name: str = "stt_en_jasper10x5dr",
         name: str = "none",
     ):
         # call super constructor to initialize the object
-        super(PretrainedFineTunedJasper, self).__init__(pretrained_model_name, name)
+        self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
 
-        self.load_config(config_path="config/jasper_10x5dr.yaml")
+        self._config["model"]["train_ds"]["manifest_filepath"] = "manifests/train_manifest.json"
+        self._config["model"]["validation_ds"]["manifest_filepath"] = "manifests/validation_manifest.json"
+
+        self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
 
         # setup the model for training (dataloaders and pl trainer)
         self.setup(
@@ -67,13 +70,17 @@ class PretrainedFineTunedJasper(PretrainedJasper):
             accelerator="gpu",
             max_epochs=300,
         )
+
+        super(PretrainedFineTunedJasper, self).__init__(name)
 
 
 class RandomInitJasper(Model):
     def __init__(self, name: str = "none"):
-        self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._model = EncDecCTCModel(self._config)
-        super(RandomInitJasper, self).__init__(name)
+        self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
+        self._config["model"]["train_ds"]["manifest_filepath"] = "manifests/train_manifest.json"
+        self._config["model"]["validation_ds"]["manifest_filepath"] = "manifests/validation_manifest.json"
+
+        self._model = EncDecCTCModel(cfg=DictConfig(self._config["model"]))
 
         # setup the model for training (dataloaders and pl trainer)
         self.setup(
@@ -83,3 +90,5 @@ class RandomInitJasper(Model):
             accelerator="gpu",
             max_epochs=300,
         )
+
+        super(RandomInitJasper, self).__init__(name)
