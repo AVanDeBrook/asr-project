@@ -24,13 +24,13 @@ class Model(object):
     _config: DictConfig
     _trainer: pl.Trainer
     _no_training: bool
-    _name: str
+    checkpoint_name: str
 
-    def __init__(self, name: str = "none"):
-        if name == "none":
+    def __init__(self, checkpoint_name: str = "none"):
+        if checkpoint_name == "none":
             logger.warning("Model name has been left to default.")
 
-        self._name = name
+        self.checkpoint_name = checkpoint_name
 
         # model should be set up by the implementing class
         assert self._model is not None
@@ -92,7 +92,7 @@ class Model(object):
         self._trainer.fit(self._model)
 
         os.makedirs("checkpoints", exist_ok=True)
-        self._model.save_to(f"checkpoints/{self.name}.nemo")
+        self._model.save_to(os.path.join("checkpoints", self.checkpoint_name))
 
     def test(
         self,
@@ -157,7 +157,7 @@ class Model(object):
 
     @property
     def name(self) -> str:
-        return self._name
+        return self.checkpoint_name
 
     def _setup_dataloaders(
         self,

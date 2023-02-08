@@ -32,12 +32,14 @@ class PretrainedJasper(Model):
     """
 
     def __init__(
-        self, pretrained_model_name: str = "stt_en_jasper10x5dr", name: str = "none",
+        self,
+        pretrained_model_name: str = "stt_en_jasper10x5dr",
+        checkpoint_name: str = "none",
     ):
         # create model
         self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
         # call super constructor to finish initializing the object
-        super(PretrainedJasper, self).__init__(name)
+        super(PretrainedJasper, self).__init__(checkpoint_name)
 
     def fit(self):
         """
@@ -49,7 +51,9 @@ class PretrainedJasper(Model):
 
 class PretrainedFineTunedJasper(Model):
     def __init__(
-        self, pretrained_model_name: str = "stt_en_jasper10x5dr", name: str = "none",
+        self,
+        pretrained_model_name: str = "stt_en_jasper10x5dr",
+        checkpoint_name: str = "none",
     ):
         # call super constructor to initialize the object
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
@@ -72,28 +76,4 @@ class PretrainedFineTunedJasper(Model):
             max_epochs=300,
         )
 
-        super(PretrainedFineTunedJasper, self).__init__(name)
-
-
-class RandomInitJasper(Model):
-    def __init__(self, name: str = "none"):
-        self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._config["model"]["train_ds"][
-            "manifest_filepath"
-        ] = "manifests/train_manifest.json"
-        self._config["model"]["validation_ds"][
-            "manifest_filepath"
-        ] = "manifests/validation_manifest.json"
-
-        self._model = EncDecCTCModel(cfg=DictConfig(self._config["model"]))
-
-        # setup the model for training (dataloaders and pl trainer)
-        self.setup(
-            training_manifest_path="manifests/train_manifest.json",
-            testing_manifest_path="manifests/test_manifest.json",
-            validation_manifest_path="manifests/validation_manifest.json",
-            accelerator="gpu",
-            max_epochs=300,
-        )
-
-        super(RandomInitJasper, self).__init__(name)
+        super(PretrainedFineTunedJasper, self).__init__(checkpoint_name)

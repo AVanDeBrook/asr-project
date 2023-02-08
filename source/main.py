@@ -5,7 +5,14 @@ from logging import INFO
 from numpy.random import default_rng
 from typing import *
 from data import Data, ATCCompleteData, ATCOSimData, ATCO2SimData, ZCUATCDataset
-from models import Model, PretrainedFineTunedJasper, PretrainedJasper, RandomInitJasper
+from models import (
+    Model,
+    PretrainedFineTunedJasper,
+    PretrainedJasper,
+    PretrainedFineTunedQuartzNet,
+    PretrainedQuartzNet,
+    RandomInitCTC,
+)
 from matplotlib.figure import Figure
 
 logger = logging.getLogger(__name__)
@@ -58,52 +65,63 @@ if __name__ == "__main__":
             )
         )
 
-    # # TODO: create a function for and clean up this mess
-    # # dump to a manifest
-    # with open("manifests/all_manifest.json", "w", encoding="utf-8") as f:
-    #     for entry in concat_dataset:
-    #         f.write(json.dumps(entry))
-    #         f.write("\n")
+    # TODO: create a function for and clean up this mess
+    # dump to a manifest
+    with open("manifests/all_manifest.json", "w", encoding="utf-8") as f:
+        for entry in concat_dataset:
+            f.write(json.dumps(entry))
+            f.write("\n")
 
-    # random.shuffle(concat_dataset)
-    # num_train_samples = int(len(concat_dataset) * 0.8)
-    # num_valid_samples = int(num_train_samples * 0.2)
+    random.shuffle(concat_dataset)
+    num_train_samples = int(len(concat_dataset) * 0.8)
+    num_valid_samples = int(num_train_samples * 0.2)
 
-    # with open("manifests/train_manifest.json", "w", encoding="utf-8") as f:
-    #     for entry in concat_dataset[:(num_train_samples - num_valid_samples)]:
-    #         f.write(json.dumps(entry))
-    #         f.write("\n")
+    with open("manifests/train_manifest.json", "w", encoding="utf-8") as f:
+        for entry in concat_dataset[: (num_train_samples - num_valid_samples)]:
+            f.write(json.dumps(entry))
+            f.write("\n")
 
-    # with open("manifests/validation_manifest.json", "w", encoding="utf-8") as f:
-    #     for entry in concat_dataset[(num_train_samples - num_valid_samples):num_train_samples]:
-    #         f.write(json.dumps(entry))
-    #         f.write("\n")
+    with open("manifests/validation_manifest.json", "w", encoding="utf-8") as f:
+        for entry in concat_dataset[
+            (num_train_samples - num_valid_samples) : num_train_samples
+        ]:
+            f.write(json.dumps(entry))
+            f.write("\n")
 
-    # with open("manifests/test_manifest.json", "w", encoding="utf-8") as f:
-    #     for entry in concat_dataset[num_train_samples:]:
-    #         f.write(json.dumps(entry))
-    #         f.write("\n")
+    with open("manifests/test_manifest.json", "w", encoding="utf-8") as f:
+        for entry in concat_dataset[num_train_samples:]:
+            f.write(json.dumps(entry))
+            f.write("\n")
 
-    # # print(f"Total samples: {len(concat_dataset)}")
-    # # print(f"Total unique tokens (across all datasets): {num_unique_tokens}")
-    # # print(f"Total tokens: {num_tokens}")
+    print(f"Total samples: {len(concat_dataset)}")
+    print(f"Total unique tokens (across all datasets): {num_unique_tokens}")
+    print(f"Total tokens: {num_tokens}")
 
     """ Model Training/Testing """
 
     # name, model pairs
     models: Dict[str, Model] = {
         # Jasper models
-        "jasper_pretrained": PretrainedJasper,
-        "jasper_finetuned": PretrainedFineTunedJasper,
-        "jasper_random_init": RandomInitJasper,
+        "jasper_pretrained.nemo": PretrainedJasper,
+        "jasper_finetuned.nemo": PretrainedFineTunedJasper,
         # QuartzNet models
+        "quartznet_pretrained.nemo": PretrainedQuartzNet,
+        "quartznet_finetuned.nemo": PretrainedFineTunedQuartzNet,
+        # "Out-of-the-Box" models
+        "ctc_randominit.nemo": RandomInitCTC,
     }
 
     # TODO
+    model_wers = []
     for name, model in models.items():
         # create model
         model: Model = model(name=name)
         # train
         model.fit()
+        # test
+        model_wers.append(model.test())
 
-    # test
+    print("WERs:")
+    print("-----------")
+    for name, wer in zip(models.values(), model_wers):
+        print(f"{name}: {wer}")

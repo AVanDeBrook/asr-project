@@ -1,8 +1,11 @@
 import logging
 import torch
 from .model import Model
-from .jasper import PretrainedJasper, PretrainedFineTunedJasper, RandomInitJasper
+from .jasper import PretrainedJasper, PretrainedFineTunedJasper
+from .quartznet import PretrainedQuartzNet, PretrainedFineTunedQuartzNet
+from .oob import RandomInitCTC
 
+# from .contextnet import
 # from transformers import *
 
 logger = logging.getLogger(__name__)
