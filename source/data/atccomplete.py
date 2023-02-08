@@ -166,7 +166,7 @@ class ATCCompleteData(Data):
                     f"{sphere_file}",
                     "-r",
                     "16000",
-                    f"{converted_file}"
+                    f"{converted_file}",
                 ]
                 # for debugging
                 # print(" ".join(ffmpeg_options))

@@ -78,8 +78,7 @@ class Data:
         )
 
     def create_token_hist(
-        self,
-        token_counts: List[int] = [],
+        self, token_counts: List[int] = [],
     ) -> matplotlib.figure.Figure:
         """
         Calculates the number of utterances in each sample and generates a histogram.
@@ -145,10 +144,7 @@ class Data:
             utterances = data["text"].split(" ")
             total_token_count += len(utterances)
 
-        return TokenStats(
-            utterances=total_token_count,
-            samples=len(self.data),
-        )
+        return TokenStats(utterances=total_token_count, samples=len(self.data),)
 
     def token_freq_analysis(self, normalize=False) -> Dict[str, Union[int, List]]:
         """

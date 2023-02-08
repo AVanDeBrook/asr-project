@@ -20,6 +20,7 @@ from nemo.collections.asr.models import EncDecCTCModel
 from typing import *
 from omegaconf import DictConfig
 
+
 class PretrainedJasper(Model):
     """
     This class instantiates a pretrained Jasper model (without fine-tuning on
@@ -31,9 +32,7 @@ class PretrainedJasper(Model):
     """
 
     def __init__(
-        self,
-        pretrained_model_name: str = "stt_en_jasper10x5dr",
-        name: str = "none",
+        self, pretrained_model_name: str = "stt_en_jasper10x5dr", name: str = "none",
     ):
         # create model
         self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
@@ -50,15 +49,17 @@ class PretrainedJasper(Model):
 
 class PretrainedFineTunedJasper(Model):
     def __init__(
-        self,
-        pretrained_model_name: str = "stt_en_jasper10x5dr",
-        name: str = "none",
+        self, pretrained_model_name: str = "stt_en_jasper10x5dr", name: str = "none",
     ):
         # call super constructor to initialize the object
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
 
-        self._config["model"]["train_ds"]["manifest_filepath"] = "manifests/train_manifest.json"
-        self._config["model"]["validation_ds"]["manifest_filepath"] = "manifests/validation_manifest.json"
+        self._config["model"]["train_ds"][
+            "manifest_filepath"
+        ] = "manifests/train_manifest.json"
+        self._config["model"]["validation_ds"][
+            "manifest_filepath"
+        ] = "manifests/validation_manifest.json"
 
         self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
 
@@ -77,8 +78,12 @@ class PretrainedFineTunedJasper(Model):
 class RandomInitJasper(Model):
     def __init__(self, name: str = "none"):
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._config["model"]["train_ds"]["manifest_filepath"] = "manifests/train_manifest.json"
-        self._config["model"]["validation_ds"]["manifest_filepath"] = "manifests/validation_manifest.json"
+        self._config["model"]["train_ds"][
+            "manifest_filepath"
+        ] = "manifests/train_manifest.json"
+        self._config["model"]["validation_ds"][
+            "manifest_filepath"
+        ] = "manifests/validation_manifest.json"
 
         self._model = EncDecCTCModel(cfg=DictConfig(self._config["model"]))
 

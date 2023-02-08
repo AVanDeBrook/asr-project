@@ -181,7 +181,9 @@ class Model(object):
         self._model.setup_training_data(self._config["model"]["train_ds"])
 
         # validation config setup
-        self._model.setup_validation_data(DictConfig(self._config["model"]["validation_ds"]))
+        self._model.setup_validation_data(
+            DictConfig(self._config["model"]["validation_ds"])
+        )
 
         # testing config setup
         self._config["model"]["test_ds"] = deepcopy(
