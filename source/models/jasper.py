@@ -41,6 +41,7 @@ class PretrainedJasper(Model):
 
         self._config["model"]["test_ds"] = deepcopy(self._config["model"]["validation_ds"])
         self._config["model"]["test_ds"]["manifest_filepath"] = "manifests/test_manifest.json"
+        self._config["model"]["test_ds"]["batch_size"] = 8
 
         # create model
         self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
@@ -81,7 +82,7 @@ class PretrainedFineTunedJasper(Model):
             testing_manifest_path="manifests/test_manifest.json",
             validation_manifest_path="manifests/validation_manifest.json",
             accelerator="gpu",
-            max_epochs=300,
+            max_epochs=100,
         )
 
         super(PretrainedFineTunedJasper, self).__init__(checkpoint_name)

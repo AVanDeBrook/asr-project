@@ -2,10 +2,13 @@ import logging
 import os
 import pytorch_lightning as pl
 import yaml
+import gc
+import torch
 from copy import deepcopy
 from typing import *
 from nemo.collections.asr.models import EncDecCTCModel
 from omegaconf import DictConfig
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,8 @@ class Model(object):
             logger.warning("Model name has been left to default.")
 
         self.checkpoint_name = checkpoint_name
+        if os.path.exists(f"checkpoints/{self.checkpoint_name}"):
+            self._model.restore_from(f"checkpoints/{self.checkpoint_name}")
 
         # model should be set up by the implementing class
         assert self._model is not None
@@ -113,11 +118,11 @@ class Model(object):
         """
         # log test predictions if set
         self._model._wer.log_prediction = log_prediction
-
+        self._model.cuda()
+        self._model.eval()
         # word error rate is defined as:
         # (substitutions + deletions + insertions) / number of words in label
         # i.e. (S+D+I) / N
-
         # S + D + I
         all_nums = []
         # N
@@ -131,7 +136,7 @@ class Model(object):
 
             # get model predictions for test samples (don't care about any other
             # returned values at this point in time)
-            _, _, predictions = self._model.forward(
+            _, _, predictions = self._model(
                 input_signal=test_batch[0], input_signal_length=test_batch[1]
             )
 
@@ -146,14 +151,16 @@ class Model(object):
             _, nums, denoms = self._model._wer.compute()
             self._model._wer.reset()
 
-            all_nums.append(nums)
-            all_denoms.append(denoms)
+            all_nums.append(nums.cpu().numpy())
+            all_denoms.append(denoms.cpu().numpy())
 
             # clean up memory for next batch
             del test_batch, predictions, nums, denoms
+            gc.collect()
+            torch.cuda.empty_cache()
 
-            # return average over the dataset
-            return sum(all_nums) / sum(all_denoms)
+        # return average over the dataset
+        return sum(all_nums) / sum(all_denoms)
 
     @property
     def name(self) -> str:
@@ -178,18 +185,20 @@ class Model(object):
         `validation_manifest_path`: Path to the validation manifest
         """
         # training config setup
-        self._model.setup_training_data(self._config["model"]["train_ds"])
+        self._config["model"]["train_ds"]["batch_size"] = 8
+        self._model.setup_training_data(DictConfig(self._config["model"]["train_ds"]))
 
         # validation config setup
-        self._model.setup_validation_data(
-            DictConfig(self._config["model"]["validation_ds"])
-        )
+        self._config["model"]["validation_ds"]["batch_size"] = 8
+        self._model.setup_validation_data(DictConfig(self._config["model"]["validation_ds"]))
 
         # testing config setup
-        self._config["model"]["test_ds"] = deepcopy(
-            self._config["model"]["validation_ds"]
+        self._config["model"]["test_ds"] = (
+            deepcopy(self._config["model"]["validation_ds"])
         )
         self._config["model"]["test_ds"]["manifest_filepath"] = testing_manifest_path
+        self._config["model"]["test_ds"]["batch_size"] = 8
+
         self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
 
     def _setup_training(self, **kwargs) -> None:

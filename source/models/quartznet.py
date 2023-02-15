@@ -44,6 +44,8 @@ class PretrainedQuartzNet(Model):
         self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
         self._config["model"]["test_ds"] = deepcopy(self._config["model"]["validation_ds"])
         self._config["model"]["test_ds"]["manifest_filepath"] = "manifests/test_manifest.json"
+        self._config["model"]["test_ds"]["batch_size"] = 8
+
 
         self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
         self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
@@ -81,7 +83,7 @@ class PretrainedFineTunedQuartzNet(Model):
             testing_manifest_path="manifests/test_manifest.json",
             validation_manifest_path="manifests/validation_manifest.json",
             accelerator="gpu",
-            max_epochs=300,
+            max_epochs=100,
         )
 
         super(PretrainedFineTunedQuartzNet, self).__init__(checkpoint_name)

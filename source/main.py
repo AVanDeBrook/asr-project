@@ -1,6 +1,7 @@
 import json
 import matplotlib.pyplot as plt
 import logging
+import os
 from logging import INFO
 from numpy.random import default_rng
 from typing import *
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         # Jasper models
         "jasper_pretrained.nemo": PretrainedJasper,
         "jasper_finetuned.nemo": PretrainedFineTunedJasper,
-        # QuartzNet models
+        # # QuartzNet models
         "quartznet_pretrained.nemo": PretrainedQuartzNet,
         "quartznet_finetuned.nemo": PretrainedFineTunedQuartzNet,
         # "Out-of-the-Box" models
@@ -112,16 +113,17 @@ if __name__ == "__main__":
     }
 
     # TODO
-    model_wers = []
+    model_wers = {}
     for name, model in models.items():
         # create model
         model: Model = model(checkpoint_name=name)
         # train
-        model.fit()
+        # if not os.path.exists(f"checkpoints/{name}"):
+        #     model.fit()
         # test
-        model_wers.append(model.test())
+        model_wers[name] = model.test(log_prediction=False)
 
     print("WERs:")
     print("-----------")
-    for name, wer in zip(models.values(), model_wers):
+    for name, wer in model_wers.items():
         print(f"{name}: {wer}")
