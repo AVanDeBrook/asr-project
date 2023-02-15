@@ -33,3 +33,6 @@ source/*.out
 # NeMo checkpoints and tensorboard logs
 source/checkpoints
 source/lightning_logs
+
+# Jupyter notebook checkpoints
+**/.ipynb_checkpoints
