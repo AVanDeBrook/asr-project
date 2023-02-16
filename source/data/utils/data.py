@@ -1,23 +1,14 @@
+import json
 import os
+from collections import namedtuple
+from pathlib import Path
+from typing import *
+
 import matplotlib
 import matplotlib.collections
 import matplotlib.figure
-import json
 import matplotlib.pyplot as plt
 import numpy as np
-from collections import namedtuple
-from typing import *
-from pathlib import Path
-
-
-TokenStats = namedtuple("TokenStats", ["tokens", "samples"])
-"""
-Named tuple for ease of access and return for utterance statistics for the dataset.
-
-`tokens` corresponds to the total number of tokens found in the dataset
-
-`samples` corresponds to the number of samples in the dataset
-"""
 
 
 class Data:
@@ -78,7 +69,8 @@ class Data:
         )
 
     def create_token_hist(
-        self, token_counts: List[int] = [],
+        self,
+        token_counts: List[int] = [],
     ) -> matplotlib.figure.Figure:
         """
         Calculates the number of utterances in each sample and generates a histogram.
@@ -121,30 +113,6 @@ class Data:
         plt.title(f"Tokens per Sample in {self.name}")
 
         return histogram
-
-    def calc_token_stats(self) -> TokenStats:
-        """
-        Calculate the following:
-        * Total number of utterances in the data
-        * Total number of samples in the data
-        * Cumulative duration of samples
-
-        Returns:
-        --------
-        an `TokenStats` named tuple with `tokens` and `samples` field corresponding to total utterance counts, total sample duration,
-        and total samples in the data
-        """
-        # check if manifest data has been generated
-        if len(self.data) == 0:
-            self.parse_transcripts()
-
-        total_token_count = 0
-
-        for data in self.data:
-            utterances = data["text"].split(" ")
-            total_token_count += len(utterances)
-
-        return TokenStats(utterances=total_token_count, samples=len(self.data),)
 
     def token_freq_analysis(self, normalize=False) -> Dict[str, Union[int, List]]:
         """
@@ -228,8 +196,56 @@ class Data:
         if return_list:
             return self.data
 
+    def concat(self, dataset: "Data"):
+        self.data.extend(dataset.data)
+
     @property
     def name(self) -> str:
+        """
+        Name of this dataset
+        """
         raise NotImplementedError(
             "This property should be implemented by the extending class"
         )
+
+    @property
+    def num_samples(self) -> int:
+        """
+        Number of samples in this dataset
+        """
+        return len(self.data)
+
+    @property
+    def hours(self) -> float:
+        """
+        Effective hours of data (silence removed)
+        """
+        total_hours = 0
+        for item in self.data:
+            total_hours += item["duration"]
+        return total_hours
+
+    @property
+    def total_tokens(self) -> int:
+        """
+        Total number of tokens in the transcripts of the dataset (labels)
+        """
+        num_tokens = 0
+        for item in self.data:
+            tokens = item["text"].split(" ")
+            num_tokens += len(tokens)
+        return num_tokens
+
+    @property
+    def unique_tokens(self) -> int:
+        """
+        Number of unique tokens in the dataset. Repeating tokens are removed
+        from this total
+        """
+        unique_tokens = []
+        for item in self.data:
+            tokens = item["text"].split(" ")
+            for token in tokens:
+                if token not in unique_tokens:
+                    unique_tokens.append(token)
+        return unique_tokens

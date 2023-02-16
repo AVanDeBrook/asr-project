@@ -1,9 +1,10 @@
-import os
 import glob
+import os
 import re
 from typing import *
-from data import Data
 from xml.etree import ElementTree
+
+from data import Data
 
 
 class ZCUATCDataset(Data):

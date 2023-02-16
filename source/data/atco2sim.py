@@ -1,11 +1,12 @@
 import glob
 import os
 import re
-import librosa
-from data import Data
+from pprint import pprint
 from typing import *
 from xml.etree import ElementTree
-from pprint import pprint
+
+import librosa
+from data import Data
 
 
 class ATCO2SimData(Data):

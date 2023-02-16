@@ -1,7 +1,7 @@
-from typing import *
-from enum import Enum
 import logging
 import string
+from enum import Enum
+from typing import *
 
 
 class TerminalDirective(Enum):

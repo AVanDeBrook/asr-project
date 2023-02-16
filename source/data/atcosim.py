@@ -1,9 +1,10 @@
-import os
 import glob
+import os
 import re
+from typing import *
+
 import librosa
 from data import Data
-from typing import *
 
 
 class ATCOSimData(Data):

@@ -1,11 +1,11 @@
-import os
 import glob
+import os
 import re
 import subprocess
-from typing import *
-from data import Data
-from data import atccutils
 from pathlib import Path
+from typing import *
+
+from data import Data, atccutils
 
 
 class ATCCompleteData(Data):
