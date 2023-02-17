@@ -1,16 +1,56 @@
+import gc
 import logging
 import os
-import pytorch_lightning as pl
-import yaml
-import gc
-import torch
 from copy import deepcopy
 from typing import *
+
+import pytorch_lightning as pl
+import torch
+import yaml
 from nemo.collections.asr.models import EncDecCTCModel
 from omegaconf import DictConfig
-from pprint import pprint
 
 logger = logging.getLogger(__name__)
+
+test_config = {
+    # this field must be updated by the setup method
+    "manifest_filepath": None,
+    "sample_rate": 16000,
+    "labels": [
+        " ",
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "'",
+    ],
+    "batch_size": 8,
+    "shuffle": False,
+    "num_workers": 8,
+    "pin_memory": True,
+}
 
 
 class Model(object):
@@ -53,21 +93,18 @@ class Model(object):
         `DictConfig`: Resulting dictionary (from loading YAML file) as
         an `omegaconf.DictCOnfig` object.
         """
-        assert os.path.exists(
-            config_path
-        ), f"Could not find config file: '{config_path}'"
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(
+                f"Configuration file path '{config_path}' does not exist"
+            )
 
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.load(stream=f)
 
         return config
 
-    def setup(
-        self,
-        training_manifest_path: str,
-        testing_manifest_path: str,
-        validation_manifest_path: str,
-        **pl_args,
+    def training_setup(
+        self, training_manifest_path: str, validation_manifest_path: str, **trainer_args
     ) -> None:
         """
         Checks for valid manifest paths and sets up data loaders for the training,
@@ -83,12 +120,42 @@ class Model(object):
 
         `validation_manifest_path`: Path to the validation manifest
         """
-        # dataloaders
-        self._setup_dataloaders(
-            training_manifest_path, testing_manifest_path, validation_manifest_path
+        assert self._config is not None
+        if not os.path.exists(training_manifest_path):
+            raise FileNotFoundError(
+                f"Training manifest path '{training_manifest_path}' does not exist"
+            )
+        if not os.path.exists(validation_manifest_path):
+            raise FileNotFoundError(
+                f"Validation manifest path '{validation_manifest_path}' does not exist"
+            )
+
+        # specify manifest paths
+        self._config["model"]["train_ds"]["manifest_filepath"] = training_manifest_path
+        self._config["model"]["validation_ds"][
+            "manifest_filepath"
+        ] = validation_manifest_path
+
+        # set up data partitions
+        self._model.setup_training_data(DictConfig(self._config["model"]["train_ds"]))
+        self._model.setup_validation_data(
+            DictConfig(self._config["model"]["validation_ds"])
         )
-        # pytorch lightning trainer
-        self._setup_training(**pl_args)
+
+        # initialize lightning trainer
+        self._trainer = pl.Trainer(**trainer_args)
+
+    def testing_setup(self, test_manifest_path: str):
+        if not os.path.exists(test_manifest_path):
+            raise FileNotFoundError(
+                f"Test manifest path '{test_manifest_path}' does not exist"
+            )
+
+        # set manifest path
+        test_config["manifest_filepath"] = test_manifest_path
+
+        # set up test data partition
+        self._model.setup_test_data(DictConfig(test_config))
 
     def fit(self) -> None:
         """
@@ -165,48 +232,3 @@ class Model(object):
     @property
     def name(self) -> str:
         return self.checkpoint_name
-
-    def _setup_dataloaders(
-        self,
-        training_manifest_path: str,
-        testing_manifest_path: str,
-        validation_manifest_path: str,
-    ) -> None:
-        """
-        Checks for valid manifest paths and sets up data loaders for the training,
-        testing, and validation datasets.
-
-        Arguments:
-        ----------
-        `training_manifest_path`: Path to the training manifest
-
-        `testing_manifest_path`: Path to the testing manifest
-
-        `validation_manifest_path`: Path to the validation manifest
-        """
-        # training config setup
-        self._config["model"]["train_ds"]["batch_size"] = 8
-        self._model.setup_training_data(DictConfig(self._config["model"]["train_ds"]))
-
-        # validation config setup
-        self._config["model"]["validation_ds"]["batch_size"] = 8
-        self._model.setup_validation_data(DictConfig(self._config["model"]["validation_ds"]))
-
-        # testing config setup
-        self._config["model"]["test_ds"] = (
-            deepcopy(self._config["model"]["validation_ds"])
-        )
-        self._config["model"]["test_ds"]["manifest_filepath"] = testing_manifest_path
-        self._config["model"]["test_ds"]["batch_size"] = 8
-
-        self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
-
-    def _setup_training(self, **kwargs) -> None:
-        """
-        Sets up a pytorch lightning trainer from passed args.
-
-        Arguments:
-        ----------
-        `**kwargs`: keyword arguments to be passed to the `pl.Trainer` constructor.
-        """
-        self._trainer = pl.Trainer(**kwargs)

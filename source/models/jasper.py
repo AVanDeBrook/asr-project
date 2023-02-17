@@ -15,11 +15,12 @@ References:
 -----------
 [0] https://arxiv.org/abs/1904.03288
 """
+from copy import deepcopy
+from typing import *
+
 from models import Model
 from nemo.collections.asr.models import EncDecCTCModel
-from typing import *
 from omegaconf import DictConfig
-from copy import deepcopy
 
 
 class PretrainedJasper(Model):
@@ -38,14 +39,7 @@ class PretrainedJasper(Model):
         checkpoint_name: str = "none",
     ):
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-
-        self._config["model"]["test_ds"] = deepcopy(self._config["model"]["validation_ds"])
-        self._config["model"]["test_ds"]["manifest_filepath"] = "manifests/test_manifest.json"
-        self._config["model"]["test_ds"]["batch_size"] = 8
-
-        # create model
         self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
-        self._model.setup_test_data(DictConfig(self._config["model"]["test_ds"]))
 
         # call super constructor to finish initializing the object
         super(PretrainedJasper, self).__init__(checkpoint_name)
@@ -66,23 +60,6 @@ class PretrainedFineTunedJasper(Model):
     ):
         # call super constructor to initialize the object
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-
-        self._config["model"]["train_ds"][
-            "manifest_filepath"
-        ] = "manifests/train_manifest.json"
-        self._config["model"]["validation_ds"][
-            "manifest_filepath"
-        ] = "manifests/validation_manifest.json"
-
         self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
-
-        # setup the model for training (dataloaders and pl trainer)
-        self.setup(
-            training_manifest_path="manifests/train_manifest.json",
-            testing_manifest_path="manifests/test_manifest.json",
-            validation_manifest_path="manifests/validation_manifest.json",
-            accelerator="gpu",
-            max_epochs=100,
-        )
 
         super(PretrainedFineTunedJasper, self).__init__(checkpoint_name)
