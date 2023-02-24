@@ -29,6 +29,7 @@ class ATCO2SimData(Data):
     ]
 
     def __init__(self, data_root: str, **kwargs):
+        ATCO2SimData.name = "ATCO2"
         super(ATCO2SimData, self).__init__(data_root, **kwargs)
         transcript_glob_string = os.path.join(data_root, "DATA/*.xml")
         audio_glob_string = os.path.join(data_root, "DATA/*.wav")
@@ -138,7 +139,3 @@ class ATCO2SimData(Data):
 
         ATCO2SimData.data = data
         return data
-
-    @property
-    def name(self) -> str:
-        return "ATCO2"

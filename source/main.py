@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from logging import DEBUG, INFO
 from typing import *
 
@@ -35,9 +36,8 @@ models: List[Tuple[str, Model, int]] = [
     ("quartznet_pretrained.nemo", PretrainedQuartzNet, None),
     ("quartznet_finetuned.nemo", PretrainedFineTunedQuartzNet, 100),
     # "Out-of-the-Box" models
-    ("ctc_randominit.nemo", RandomInitCTC, 300)
+    ("ctc_randominit.nemo", RandomInitCTC, 300),
 ]
-
 
 if __name__ == "__main__":
     # TODO: clean this main statement
@@ -49,6 +49,9 @@ if __name__ == "__main__":
 
     plt.style.use("ggplot")
 
+    dataset_info = {"dataset_info": []}
+    data_objects: List[Data] = []
+
     for root_path, data_class in datasets.items():
         data_analysis: Data = data_class(data_root=root_path, random_seed=RANDOM_SEED)
         print(data_analysis.name)
@@ -58,6 +61,26 @@ if __name__ == "__main__":
 
         # tokens in dataset
         token_freq = data_analysis.token_freq_analysis(normalize=True)
+
+        dataset_info["dataset_info"].append(
+            {
+                "dataset_name": data_analysis.name,
+                "samples": data_analysis.num_samples,
+                "duration": data_analysis.duration,
+                "total_tokens": data_analysis.total_tokens,
+                "unique_tokens": data_analysis.unique_tokens,
+            }
+        )
+        data_objects.append(data_analysis)
+
+    with open("manifests/dataset_stats.json", "w", encoding="utf-8") as f:
+        f.write(json.dumps(dataset_info, indent=1))
+
+    for o in data_objects[1:]:
+        # concatenate everything to first object
+        data_objects[0].concat(o)
+
+    print(f"Unique tokens: {data_objects[0].unique_tokens}")
 
     """ Model Training/Testing """
 
@@ -73,18 +96,13 @@ if __name__ == "__main__":
                 training_manifest_path="manifests/train_manifest.json",
                 validation_manifest_path="manifests/valid_manifest.json",
                 accelerator="gpu",
-                max_epochs=epochs
+                max_epochs=epochs,
             )
             model.fit()
 
         # test
         model.testing_setup(test_manifest_path="manifests/test_manifest.json")
-        model_wers.append(
-            tuple([
-                name,
-                model.test()
-            ])
-        )
+        model_wers.append(tuple([name, model.test()]))
 
     print("WERs:")
     print("-----------")

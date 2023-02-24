@@ -55,6 +55,7 @@ class ATCCompleteData(Data):
     # _transcript_glob: List[str]
 
     def __init__(self, data_root: str, **kwargs):
+        ATCCompleteData.name = "Air Traffic Control Complete"
         super(ATCCompleteData, self).__init__(data_root, **kwargs)
         # glob strings for audio and transcripts
         sphere_glob_string = os.path.join(data_root, "**/data/audio/*.sph")
@@ -174,7 +175,3 @@ class ATCCompleteData(Data):
                 converted_paths.append(converted_file)
 
         return converted_paths
-
-    @property
-    def name(self):
-        return "Air Traffic Control Complete"

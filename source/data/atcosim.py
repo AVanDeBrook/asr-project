@@ -26,6 +26,7 @@ class ATCOSimData(Data):
     transcription_corrections = [("kil0", "kilo"), ("ai", "air"), ("airr", "air")]
 
     def __init__(self, data_root: str, **kwargs):
+        ATCOSimData.name = "ATCO"
         super(ATCOSimData, self).__init__(data_root, **kwargs)
         # glob patterns for audio and transcripts
         transcript_glob_string = os.path.join(data_root, "txtdata/**/*.txt")
@@ -93,7 +94,3 @@ class ATCOSimData(Data):
 
         ATCOSimData.data = data
         return data
-
-    @property
-    def name(self):
-        return "ATCO"

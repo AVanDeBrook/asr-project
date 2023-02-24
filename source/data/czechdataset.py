@@ -27,6 +27,7 @@ class ZCUATCDataset(Data):
     """
 
     def __init__(self, data_root: str, **kwargs):
+        ZCUATCDataset.name = "ZCU ATC"
         super(ZCUATCDataset, self).__init__(data_root, **kwargs)
 
         self.transcript_paths = glob.glob(os.path.join(data_root, "*.trs"))
@@ -83,7 +84,3 @@ class ZCUATCDataset(Data):
 
         ZCUATCDataset.data = data
         return data
-
-    @property
-    def name(self) -> str:
-        return "ZCU ATC"

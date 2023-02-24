@@ -1,6 +1,6 @@
 import json
 import os
-from collections import namedtuple
+import logging
 from pathlib import Path
 from typing import *
 
@@ -9,6 +9,12 @@ import matplotlib.collections
 import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
+import librosa
+import librosa.display
+
+logger = logging.getLogger(__name__)
+
+manifest_fields: List[str] = ["audio_filepath", "duration", "text"]
 
 
 class Data:
@@ -46,9 +52,7 @@ class Data:
         `data_root`: path to the base of the dataset, basically just a path from which the
         audio and transcript data can be found. Varies by dataset and implementation.
         """
-        assert isinstance(data_root, str)
-        assert os.path.exists(data_root), f"Path does not exist {data_root}"
-
+        Data.data = []
         # create random number generator sequence with specified seed, if applicable
         Data._random = np.random.default_rng(random_seed)
 
@@ -157,9 +161,6 @@ class Data:
 
         return token_freqs
 
-    def normalize_data(self):
-        pass
-
     def dump_manifest(
         self, outfile: str, make_dirs: bool = True, return_list: bool = False
     ) -> Union[None, List[Dict]]:
@@ -196,17 +197,92 @@ class Data:
         if return_list:
             return self.data
 
-    def concat(self, dataset: "Data"):
-        self.data.extend(dataset.data)
+    def concat(self, child_dataset: "Data"):
+        """
+        Concatenates data classes/sets. Extends the data array of parent object to
+        include data from child object. Also updates any relevant common metadata
+        fields.
+        """
+        self.data.extend(child_dataset.data)
+        self.name = f"{self.name} + {child_dataset.name}"
+
+    def generate_spec(
+        self, index_or_path: Union[int, str, None] = None
+    ) -> Union[str, Tuple[str, str]]:
+        """
+        Generate a Mel-scale spectrogram from the index (in the data list
+        attribute) or provided file path. If neither index or path is provided,
+        a sample will be chosen at random.
+
+        Arguments:
+        ----------
+        `index_or_path`: `str` or `int` either a file path or an index in the
+        data list (`self.data`)
+
+        Returns:
+        --------
+        Either the path to the audio file or a Tuple of the audio file path
+        and transcription.
+        """
+        # if an offset is relevant, set this to the correct value
+        offset = 0
+        # there is a realistic chance that this variable won't be created, so
+        # it has to be initialized here first
+        duration = 0
+        transcript = ""
+        # if a value is given, use either the index or path
+        if index_or_path is not None:
+            if isinstance(index_or_path, int):
+                sample = self.data[index_or_path]
+                audio_file = sample["audio_filepath"]
+                transcript = sample["text"]
+
+                if "offset" in sample:
+                    offset = sample["offset"]
+                    duration = sample["duration"]
+            elif isinstance(index_or_path, str):
+                audio_file = index_or_path
+        # otherwise pick a sample at random
+        else:
+            random_index = int(len(self.data) * self._random.random())
+            sample = self.data[random_index]
+            audio_file = sample["audio_filepath"]
+            transcript = sample["text"]
+
+            # for files with multiple samples in them, this indicates the time
+            # at which THIS sample begins. Use with duration to get entire sample
+            if "offset" in sample:
+                offset = sample["offset"]
+                duration = sample["duration"]
+
+        # if the duration wasn't set above, set it here
+        if duration == 0:
+            duration = librosa.get_duration(filename=audio_file)
+
+        # load audio data and generate spectrogram
+        data, sample_rate = librosa.load(audio_file, offset=offset, duration=duration)
+        melspec_data = librosa.feature.melspectrogram(y=data, sr=sample_rate)
+        melspec_data = librosa.power_to_db(melspec_data, ref=np.max)
+
+        # add spec data to plot
+        fig, ax = plt.subplots()
+        img = librosa.display.specshow(
+            melspec_data, x_axis="time", y_axis="mel", sr=sample_rate, ax=ax
+        )
+        fig.colorbar(img, ax=ax, format="%+2.0f dB")
+
+        # return both path and transcript if available, otherwise just the path
+        if transcript == "":
+            return audio_file
+        else:
+            return audio_file, transcript
 
     @property
     def name(self) -> str:
         """
         Name of this dataset
         """
-        raise NotImplementedError(
-            "This property should be implemented by the extending class"
-        )
+        return self.name
 
     @property
     def num_samples(self) -> int:
@@ -216,9 +292,9 @@ class Data:
         return len(self.data)
 
     @property
-    def hours(self) -> float:
+    def duration(self) -> float:
         """
-        Effective hours of data (silence removed)
+        Cummulative duration of the data (in seconds)
         """
         total_hours = 0
         for item in self.data:
@@ -248,4 +324,53 @@ class Data:
             for token in tokens:
                 if token not in unique_tokens:
                     unique_tokens.append(token)
-        return unique_tokens
+        return len(unique_tokens)
+
+    @staticmethod
+    def from_manifest(manifest_path: str, random_seed: int = 1) -> "Data":
+        """
+        Loads dataset info from a manifest file (if dataset has already been
+        parsed into the NeMo manifest format). `parse_transcripts` does not need
+        to be called after this function.
+
+        **Use with caution**: If the manifest files were generated on another system,
+        it is highly likely that the file paths in the manifest are incorrect and will
+        result it every other function/method to break or behave strangely.
+
+        Arguments:
+        ----------
+        `manifest_path`: `str`, path to the manifest file
+
+        `random_seed`: `int`, random seed to initialize the class with (defaults to 1)
+
+        Returns:
+        --------
+        `Data`: a data class initialized with the data in the manifest file
+        """
+        if not os.path.exists(manifest_path):
+            raise FileNotFoundError(f"Manifest path not found '{manifest_path}'")
+
+        # initialize class
+        data_object = Data(data_root=None, random_seed=random_seed)
+
+        # extract manifest info
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            for line in f.readlines():
+                line_data = json.loads(line)
+
+                # check if minimum required fields are present:
+                for field in manifest_fields:
+                    if field not in line_data.keys():
+                        logger.warn(f"Required field not found: {field}")
+
+                # warnings about non-existent file paths
+                if "audio_filepath" in line_data.keys():
+                    if not os.path.exists(line_data["audio_filepath"]):
+                        logger.warn(
+                            f"Audio path not found: {line_data['audio_filepath']}"
+                        )
+
+                # append sample info to object
+                data_object.data.append(line_data)
+
+        return data_object

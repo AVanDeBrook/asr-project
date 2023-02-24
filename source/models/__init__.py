@@ -2,8 +2,8 @@ import logging
 
 import torch
 
-from .jasper import PretrainedFineTunedJasper, PretrainedJasper
 from .model import Model
+from .jasper import PretrainedFineTunedJasper, PretrainedJasper
 from .oob import RandomInitCTC
 from .quartznet import PretrainedFineTunedQuartzNet, PretrainedQuartzNet
 

@@ -39,7 +39,9 @@ class PretrainedJasper(Model):
         checkpoint_name: str = "none",
     ):
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
+        self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(
+            model_name=pretrained_model_name
+        )
 
         # call super constructor to finish initializing the object
         super(PretrainedJasper, self).__init__(checkpoint_name)
