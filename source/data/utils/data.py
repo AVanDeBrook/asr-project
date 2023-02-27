@@ -272,10 +272,12 @@ class Data:
         fig.colorbar(img, ax=ax, format="%+2.0f dB")
 
         # return both path and transcript if available, otherwise just the path
-        if transcript == "":
-            return audio_file
-        else:
-            return audio_file, transcript
+        return {
+            "file": audio_file,
+            "transcript": transcript,
+            "offset": offset,
+            "duration": duration,
+        }
 
     @property
     def name(self) -> str:
