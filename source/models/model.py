@@ -63,22 +63,13 @@ class Model(object):
     `_model`
     """
 
-    _model: EncDecCTCModel
-    _config: DictConfig
-    _trainer: pl.Trainer
-    _no_training: bool
-    checkpoint_name: str
-
-    def __init__(self, checkpoint_name: str = "none"):
+    def __init__(self, checkpoint_name: str = "none", model_class=EncDecCTCModel):
         if checkpoint_name == "none":
             logger.warning("Model name has been left to default.")
 
         self.checkpoint_name = checkpoint_name
-        if os.path.exists(f"checkpoints/{self.checkpoint_name}"):
-            self._model.restore_from(f"checkpoints/{self.checkpoint_name}")
-
-        # model should be set up by the implementing class
-        assert self._model is not None
+        if os.path.exists(self.checkpoint_name):
+            self._model = model_class.restore_from(self.checkpoint_name)
 
     def load_config(self, config_path: str) -> Dict:
         """

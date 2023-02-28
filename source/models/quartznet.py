@@ -43,8 +43,9 @@ class PretrainedQuartzNet(Model):
         checkpoint_name: str = "none",
     ):
         self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
-
         super(PretrainedQuartzNet, self).__init__(checkpoint_name)
+        if self._model is None:
+            self._model = EncDecCTCModel.from_pretrained(pretrained_model_name)
 
     def fit(self):
         """
@@ -61,6 +62,6 @@ class PretrainedFineTunedQuartzNet(Model):
         checkpoint_name: str = "none",
     ):
         self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
-        self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
-
         super(PretrainedFineTunedQuartzNet, self).__init__(checkpoint_name)
+        if self._model is None:
+            self._model = EncDecCTCModel.from_pretrained(pretrained_model_name)

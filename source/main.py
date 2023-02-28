@@ -30,13 +30,13 @@ datasets: Dict[str, Data] = {
 # name, model, number of epochs to train
 models: List[Tuple[str, Model, int]] = [
     # Jasper models
-    ("jasper_pretrained.nemo", PretrainedJasper, None),
-    ("jasper_finetuned.nemo", PretrainedFineTunedJasper, 100),
+    ("checkpoints/jasper_pretrained.nemo", PretrainedJasper, None),
+    ("checkpoints/jasper_finetuned.nemo", PretrainedFineTunedJasper, 100),
     # # QuartzNet models
-    ("quartznet_pretrained.nemo", PretrainedQuartzNet, None),
-    ("quartznet_finetuned.nemo", PretrainedFineTunedQuartzNet, 100),
+    ("checkpoints/quartznet_pretrained.nemo", PretrainedQuartzNet, None),
+    ("checkpoints/quartznet_finetuned.nemo", PretrainedFineTunedQuartzNet, 100),
     # "Out-of-the-Box" models
-    ("ctc_randominit.nemo", RandomInitCTC, 300),
+    ("checkpoints/ctc_randominit.nemo", RandomInitCTC, 300),
 ]
 
 if __name__ == "__main__":
@@ -86,12 +86,12 @@ if __name__ == "__main__":
 
     # TODO
     model_wers: List[Tuple[str, float]] = []
-    for name, model_class, epochs in models:
+    for checkpoint_name, model_class, epochs in models:
         # create model
-        model: Model = model_class(checkpoint_name=name)
+        model: Model = model_class(checkpoint_name=checkpoint_name)
 
         # train
-        if not os.path.exists(f"checkpoints/{name}") and epochs is not None:
+        if not os.path.exists(checkpoint_name) and epochs is not None:
             model.training_setup(
                 training_manifest_path="manifests/train_manifest.json",
                 validation_manifest_path="manifests/valid_manifest.json",
@@ -100,11 +100,14 @@ if __name__ == "__main__":
             )
             model.fit()
 
+        if epochs is None:
+            model._model.save_to(checkpoint_name)
+
         # test
         model.testing_setup(test_manifest_path="manifests/test_manifest.json")
-        model_wers.append(tuple([name, model.test()]))
+        model_wers.append(tuple([checkpoint_name, model.test()]))
 
     print("WERs:")
     print("-----------")
-    for name, wer in model_wers:
-        print(f"{name}: {wer}")
+    for checkpoint_name, wer in model_wers:
+        print(f"{checkpoint_name}: {wer}")

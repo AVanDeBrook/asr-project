@@ -15,6 +15,7 @@ References:
 -----------
 [0] https://arxiv.org/abs/1904.03288
 """
+import os
 from copy import deepcopy
 from typing import *
 
@@ -39,12 +40,10 @@ class PretrainedJasper(Model):
         checkpoint_name: str = "none",
     ):
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._model: EncDecCTCModel = EncDecCTCModel.from_pretrained(
-            model_name=pretrained_model_name
-        )
-
         # call super constructor to finish initializing the object
         super(PretrainedJasper, self).__init__(checkpoint_name)
+        if self._model is None:
+            self._model = EncDecCTCModel.from_pretrained(pretrained_model_name)
 
     def fit(self):
         """
@@ -62,6 +61,6 @@ class PretrainedFineTunedJasper(Model):
     ):
         # call super constructor to initialize the object
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        self._model = EncDecCTCModel.from_pretrained(model_name=pretrained_model_name)
-
         super(PretrainedFineTunedJasper, self).__init__(checkpoint_name)
+        if self._model is None:
+            self._model = EncDecCTCModel.from_pretrained(pretrained_model_name)
