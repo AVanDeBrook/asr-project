@@ -23,11 +23,8 @@ class ATCOSimData(Data):
     ```
     """
 
-    transcription_corrections = [("kil0", "kilo"), ("ai", "air"), ("airr", "air")]
-
     def __init__(self, data_root: str, **kwargs):
-        ATCOSimData.name = "ATCO"
-        super(ATCOSimData, self).__init__(data_root, **kwargs)
+        super(ATCOSimData, self).__init__(data_root, dataset_name="ATCO", **kwargs)
         # glob patterns for audio and transcripts
         transcript_glob_string = os.path.join(data_root, "txtdata/**/*.txt")
         audio_glob_string = os.path.join(data_root, "wavdata/**/*.wav")
@@ -41,6 +38,12 @@ class ATCOSimData(Data):
         wordlist_path = os.path.join(data_root, "txtdata/wordlist.txt")
         if os.path.exists(wordlist_path):
             self._transcript_paths.remove(wordlist_path)
+
+        self.transcription_corrections = [
+            ("kil0", "kilo"),
+            ("ai", "air"),
+            ("airr", "air"),
+        ]
 
     def parse_transcripts(self) -> List[Dict[str, Union[str, float]]]:
         assert len(self._audio_paths) == len(

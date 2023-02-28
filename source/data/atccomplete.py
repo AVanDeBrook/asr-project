@@ -29,34 +29,10 @@ class ATCCompleteData(Data):
     to one sample in the data i.e. one transmission.
     """
 
-    # there are a lot of typos in this dataset; this is the running list with corrections
-    # list of (typo, correction) pairs (tuples)
-    transcript_corrections = [
-        ("0h", "oh"),
-        ("0r", "or"),
-        ("8'll", "i'll"),
-        ("kil0", "kilo"),
-        ("altimeter;;;'s", "altimeter's"),
-        ("bye]", "bye"),
-        (" -", ""),
-        (" 3 ", "three"),
-        ("1347.85706", "one three four seven dot eight five seven zero six"),
-        ("four]", "four"),
-        # flight number metadata somehow made it into some of the transcripts
-        ("swift61", ""),
-        ("aal891", ""),
-        # repeated words/hesitations
-        ("ai", ""),
-        ("cir-", ""),
-        ("cli-", ""),
-    ]
-
-    # _audio_glob: List[str]
-    # _transcript_glob: List[str]
-
     def __init__(self, data_root: str, **kwargs):
-        ATCCompleteData.name = "Air Traffic Control Complete"
-        super(ATCCompleteData, self).__init__(data_root, **kwargs)
+        super(ATCCompleteData, self).__init__(
+            data_root, dataset_name="Air Traffic Control Complete", **kwargs
+        )
         # glob strings for audio and transcripts
         sphere_glob_string = os.path.join(data_root, "**/data/audio/*.sph")
         wav_glob_string = os.path.join(data_root, "**/data/audio/*.wav")
@@ -70,6 +46,28 @@ class ATCCompleteData(Data):
         self._transcript_glob = sorted(
             glob.glob(transcript_glob_string, recursive=True)
         )
+
+        # there are a lot of typos in this dataset; this is the running list with corrections
+        # list of (typo, correction) pairs (tuples)
+        self.transcript_corrections = [
+            ("0h", "oh"),
+            ("0r", "or"),
+            ("8'll", "i'll"),
+            ("kil0", "kilo"),
+            ("altimeter;;;'s", "altimeter's"),
+            ("bye]", "bye"),
+            (" -", ""),
+            (" 3 ", "three"),
+            ("1347.85706", "one three four seven dot eight five seven zero six"),
+            ("four]", "four"),
+            # flight number metadata somehow made it into some of the transcripts
+            ("swift61", ""),
+            ("aal891", ""),
+            # repeated words/hesitations
+            ("ai", ""),
+            ("cir-", ""),
+            ("cli-", ""),
+        ]
 
     def parse_transcripts(self) -> List[Dict[str, Union[str, float]]]:
         """

@@ -22,20 +22,19 @@ class ATCO2SimData(Data):
     `~parse_transcripts`.
     """
 
-    transcription_corrections = [
-        ("your're", "you're"),
-        ("affirmatif", "affirmative"),
-        ("zurrich", "zurich"),
-    ]
-
     def __init__(self, data_root: str, **kwargs):
-        ATCO2SimData.name = "ATCO2"
-        super(ATCO2SimData, self).__init__(data_root, **kwargs)
+        super(ATCO2SimData, self).__init__(data_root, dataset_name="ATCO2", **kwargs)
         transcript_glob_string = os.path.join(data_root, "DATA/*.xml")
         audio_glob_string = os.path.join(data_root, "DATA/*.wav")
 
         self._transcript_glob = sorted(glob.glob(transcript_glob_string))
         self._audio_glob = sorted(glob.glob(audio_glob_string))
+
+        self.transcription_corrections = [
+            ("your're", "you're"),
+            ("affirmatif", "affirmative"),
+            ("zurrich", "zurich"),
+        ]
         assert len(self._transcript_glob) != 0
         assert len(self._audio_glob) != 0
 

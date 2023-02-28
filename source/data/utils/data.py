@@ -41,20 +41,20 @@ class Data:
     `_normalized`: bool indicating whether samples in the dataset have been normalized/preprocessed
     """
 
-    data: List[Dict[str, Union[float, str]]]
-    _random: np.random.Generator
-    _normalized: bool
-
-    def __init__(self, data_root: str, random_seed: int = None):
+    def __init__(
+        self, data_root: str, random_seed: int = None, dataset_name: str = "data"
+    ):
         """
         Arguments:
         ----------
         `data_root`: path to the base of the dataset, basically just a path from which the
         audio and transcript data can be found. Varies by dataset and implementation.
         """
-        Data.data = []
+        self.dataset_name = dataset_name
+        self.data = []
         # create random number generator sequence with specified seed, if applicable
-        Data._random = np.random.default_rng(random_seed)
+        self._random = np.random.default_rng(random_seed)
+        self.normalized = False
 
     def parse_transcripts(self) -> List[str]:
         """
@@ -204,7 +204,7 @@ class Data:
         fields.
         """
         self.data.extend(child_dataset.data)
-        self.name = f"{self.name} + {child_dataset.name}"
+        self.dataset_name = f"{self.name} + {child_dataset.name}"
 
     def generate_spec(
         self, index_or_path: Union[int, str, None] = None
@@ -284,7 +284,7 @@ class Data:
         """
         Name of this dataset
         """
-        return self.name
+        return self.dataset_name
 
     @property
     def num_samples(self) -> int:
@@ -328,8 +328,8 @@ class Data:
                     unique_tokens.append(token)
         return len(unique_tokens)
 
-    @staticmethod
-    def from_manifest(manifest_path: str, random_seed: int = 1) -> "Data":
+    @classmethod
+    def from_manifest(cls: "Data", manifest_path: str, random_seed: int = 1) -> "Data":
         """
         Loads dataset info from a manifest file (if dataset has already been
         parsed into the NeMo manifest format). `parse_transcripts` does not need
@@ -353,7 +353,7 @@ class Data:
             raise FileNotFoundError(f"Manifest path not found '{manifest_path}'")
 
         # initialize class
-        data_object = Data(data_root=None, random_seed=random_seed)
+        data = cls(data_root=None, random_seed=random_seed)
 
         # extract manifest info
         with open(manifest_path, "r", encoding="utf-8") as f:
@@ -363,16 +363,16 @@ class Data:
                 # check if minimum required fields are present:
                 for field in manifest_fields:
                     if field not in line_data.keys():
-                        logger.warn(f"Required field not found: {field}")
+                        logger.warn(f"Required field not found: '{field}'")
 
                 # warnings about non-existent file paths
                 if "audio_filepath" in line_data.keys():
                     if not os.path.exists(line_data["audio_filepath"]):
                         logger.warn(
-                            f"Audio path not found: {line_data['audio_filepath']}"
+                            f"Audio path not found: '{line_data['audio_filepath']}'"
                         )
 
                 # append sample info to object
-                data_object.data.append(line_data)
+                data.data.append(line_data)
 
-        return data_object
+        return data
