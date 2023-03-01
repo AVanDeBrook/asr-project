@@ -174,6 +174,14 @@ class Model(object):
         --------
         `float`: Average WER over the test set.
         """
+        if testing_set == "test":
+            dataloader = self._model.test_dataloader
+        elif testing_set == "train":
+            dataloader = self._model.train_dataloader
+        else:
+            raise ValueError(
+                f"argument 'testing_set' must take a value of either 'train' or 'test' got '{testing_set}' instead"
+            )
         # log test predictions if set
         self._model._wer.log_prediction = log_prediction
         self._model.cuda()
@@ -187,7 +195,7 @@ class Model(object):
         all_denoms = []
 
         # loop through test samples/batches and calculate individual WERs
-        for test_batch in self._model.test_dataloader():
+        for test_batch in dataloader():
             # test batches are made up of the following:
             # [signal, signal length, target, target length]
             test_batch = [x.cuda() for x in test_batch]
