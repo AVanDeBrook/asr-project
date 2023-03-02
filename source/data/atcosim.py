@@ -24,7 +24,7 @@ class ATCOSimData(Data):
     """
 
     def __init__(self, data_root: str, **kwargs):
-        super(ATCOSimData, self).__init__(data_root, dataset_name="ATCO", **kwargs)
+        super(ATCOSimData, self).__init__(dataset_name="ATCO", **kwargs)
         # glob patterns for audio and transcripts
         transcript_glob_string = os.path.join(data_root, "txtdata/**/*.txt")
         audio_glob_string = os.path.join(data_root, "wavdata/**/*.wav")
@@ -95,5 +95,5 @@ class ATCOSimData(Data):
                     }
                 )
 
-        ATCOSimData.data = data
+        self.data = data
         return data

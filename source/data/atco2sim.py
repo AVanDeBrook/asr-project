@@ -23,7 +23,7 @@ class ATCO2SimData(Data):
     """
 
     def __init__(self, data_root: str, **kwargs):
-        super(ATCO2SimData, self).__init__(data_root, dataset_name="ATCO2", **kwargs)
+        super(ATCO2SimData, self).__init__(dataset_name="ATCO2", **kwargs)
         transcript_glob_string = os.path.join(data_root, "DATA/*.xml")
         audio_glob_string = os.path.join(data_root, "DATA/*.wav")
 
@@ -136,5 +136,5 @@ class ATCO2SimData(Data):
                             }
                         )
 
-        ATCO2SimData.data = data
+        self.data = data
         return data

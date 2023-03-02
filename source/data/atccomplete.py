@@ -31,8 +31,12 @@ class ATCCompleteData(Data):
 
     def __init__(self, data_root: str, **kwargs):
         super(ATCCompleteData, self).__init__(
-            data_root, dataset_name="Air Traffic Control Complete", **kwargs
+            dataset_name="Air Traffic Control Complete", **kwargs
         )
+
+        if not os.path.exists(data_root):
+            raise FileNotFoundError(f"Could not find dataset root: '{data_root}'")
+
         # glob strings for audio and transcripts
         sphere_glob_string = os.path.join(data_root, "**/data/audio/*.sph")
         wav_glob_string = os.path.join(data_root, "**/data/audio/*.wav")
@@ -128,7 +132,7 @@ class ATCCompleteData(Data):
                         )
 
         # save manifest data to class attribute before returning
-        ATCCompleteData.data = data
+        self.data = data
         return data
 
     def sphere_to_wav(self, sphere_glob: List[str]) -> List[str]:

@@ -41,9 +41,7 @@ class Data:
     `_normalized`: bool indicating whether samples in the dataset have been normalized/preprocessed
     """
 
-    def __init__(
-        self, data_root: str, random_seed: int = None, dataset_name: str = "data"
-    ):
+    def __init__(self, random_seed: int = None, dataset_name: str = "data"):
         """
         Arguments:
         ----------
@@ -353,7 +351,7 @@ class Data:
             raise FileNotFoundError(f"Manifest path not found '{manifest_path}'")
 
         # initialize class
-        data = cls(data_root=None, random_seed=random_seed)
+        data = cls(random_seed=random_seed)
 
         # extract manifest info
         with open(manifest_path, "r", encoding="utf-8") as f:
