@@ -76,8 +76,8 @@ if __name__ == "__main__":
     with open("manifests/dataset_stats.json", "w", encoding="utf-8") as f:
         f.write(json.dumps(dataset_info, indent=1))
 
+    # concatenate everything to first object
     for o in data_objects[1:]:
-        # concatenate everything to first object
         data_objects[0].concat(o)
 
     print(f"Unique tokens: {data_objects[0].unique_tokens}")
