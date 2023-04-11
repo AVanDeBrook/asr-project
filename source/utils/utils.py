@@ -14,7 +14,7 @@ def transcribe_audio(
     duration: float = 0.0,
     offset: float = 0.0,
     device: Union[Literal["cuda"], Literal["cpu"]] = "cuda",
-):
+) -> str:
     assert path is not None
     assert os.path.exists(path)
     assert model is not None
@@ -37,7 +37,7 @@ def transcribe_audio(
 
     # get input data and length
     signal = AudioSegment.from_file(
-        path, 16000, offset=offset, duration=duration
+        path, 16000, offset=offset, duration=duration, channel_selector=0
     ).samples
 
     # get model predictions/logits

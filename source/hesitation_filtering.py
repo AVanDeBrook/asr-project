@@ -50,3 +50,5 @@ if __name__ == "__main__":
         for datum in false_start_predictions:
             f.write(json.dumps(datum))
             f.write("\n")
+
+    

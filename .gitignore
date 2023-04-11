@@ -36,3 +36,7 @@ source/lightning_logs
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints
+
+# Test outputs
+*.xlsx
+**/*.xlsx
