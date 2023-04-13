@@ -40,3 +40,6 @@ source/lightning_logs
 # Test outputs
 *.xlsx
 **/*.xlsx
+
+# Sphinx build artifacts
+build

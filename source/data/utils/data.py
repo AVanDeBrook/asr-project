@@ -22,31 +22,31 @@ class Data:
     Top-level Data class that provides several methods for processing and analyzing text datasets for NLP processes.
 
     This class should be extended and the following methods/properties implemented for each dataset:
-    * `parse_transcripts`
-    * `name`
 
-    Attributes:
-    -----------
-    `data`: list of dictionary objects. Each object corresponds to one data sample
+    * ``parse_transcripts``
+
+    * ``name``
+
+    ``data``: list of dictionary objects. Each object corresponds to one data sample
     and typically contains the following metadata:
-    * `audio_filepath` (required) - path to the audio data (input data). Type: `str`,
-    absolute file path, conforms to `os.PathLike`
-    * `duration` (required) - duration, in seconds, of the audio data. Type: `float`
-    * `text` (required) - transcript of the audio data (label/ground truth). Type: `str`
-    * `offset` - if more than one sample is present in a single audio file, this field
-    specifies its offset i.e. start time in the audio file. Type: `float`
 
-    `_random`: numpy seeded RNG instance
+    * ``audio_filepath`` (**required**) - path to the audio data (input data). Type: ``str``, absolute file path, conforms to ``os.PathLike``
 
-    `_normalized`: bool indicating whether samples in the dataset have been normalized/preprocessed
+    * ``duration`` (**required**) - duration, in seconds, of the audio data. Type: ``float``
+
+    * ``text`` (**required**) - transcript of the audio data (label/ground truth). Type: `str`
+
+    * ``offset`` - if more than one sample is present in a single audio file, this field specifies its offset i.e. start time in the audio file. Type: ``float``
+
+    ``_random``: numpy seeded RNG instance
+
+    ``_normalized``: boolean indicating whether samples in the dataset have been normalized/preprocessed
     """
 
     def __init__(self, random_seed: int = None, dataset_name: str = "data"):
         """
-        Arguments:
-        ----------
-        `data_root`: path to the base of the dataset, basically just a path from which the
-        audio and transcript data can be found. Varies by dataset and implementation.
+        :param data_root: path to the base of the dataset, basically just a path from which the audio and transcript data can be found. Varies by dataset and implementation.
+        :param dataset_name: Name of the dataset.
         """
         self.dataset_name = dataset_name
         self.data = []
@@ -59,9 +59,7 @@ class Data:
         This method must be overridden and implemented for each implementation of this class
         for datasets.
 
-        Returns:
-        --------
-        Dictionary (from `json` module) with necessary data info e.g. annotations, file
+        :returns: Dictionary (from `json` module) with necessary data info e.g. annotations, file
         path, audio length, offset.
         """
         raise NotImplementedError(
@@ -71,8 +69,7 @@ class Data:
         )
 
     def create_token_hist(
-        self,
-        token_counts: List[int] = [],
+        self, token_counts: List[int] = [],
     ) -> matplotlib.figure.Figure:
         """
         Calculates the number of utterances in each sample and generates a histogram.
@@ -83,16 +80,9 @@ class Data:
         TODO: add flexibility for plot types.
         TODO: issue with figures (figures/axes need to be cleared between runs)
 
-        Arguments:
-        ----------
-        `utterance_counts`: (Optional) `list` of `ints` for precalculated utterance counts.
+        :param utterance_counts: (Optional) `list` of `ints` for precalculated utterance counts.
 
-        `plot_type`: (Optional) `str` type of plot tool to use to create the histogram.
-        Can be either `"seaborn"` or `"matplotlib"`. Defaults to `"seaborn"`.
-
-        Returns:
-        --------
-        Either a `matplotlib.pyplot.Figure` or `seaborn.object.Plot` instance, depending on the value of `plot_type`.
+        :returns: Either a `matplotlib.pyplot.Figure` or `seaborn.object.Plot` instance, depending on the value of `plot_type`.
         """
         # Clear figure and axes
         plt.clf(), plt.cla()
@@ -116,23 +106,21 @@ class Data:
 
         return histogram
 
-    def token_freq_analysis(self, normalize=False) -> Dict[str, Union[int, List]]:
+    def token_freq_analysis(
+        self, normalize: bool = False
+    ) -> Dict[str, Union[int, List]]:
         """
         Perform a token frequency analysis on the dataset (number of occurrences of each token throughout the dataset).
 
-        Arguments:
-        ----------
-        `normalize`: (optional)`bool`, whether to normalize values such that all frequencies add to 1.
+        :param normalize: (optional) whether to normalize values such that all frequencies add to 1.
+        :returns: ``token_freqs``: ``dict`` with tokens and number of occurrences of those tokens throughout the dataset.
 
-        Returns:
-        --------
-        `token_freqs`: `dict` with tokens and number of occurrences of those tokens throughout the dataset.
-        If `normalize` is set to `True` a dictionary with tokens corresponding to a list is returned e.g.
-        ```
-        {
-            "token": [24, 0.0486] # token with corresponding occurences and frequencies
-        }
-        ```
+        If ``normalize`` is set to ``True`` a dictionary with tokens corresponding to a list is returned e.g.
+        ::
+
+            {
+                "token": [24, 0.0486]
+            }
 
         """
         if len(self.data) == 0:
@@ -165,18 +153,10 @@ class Data:
         """
         Dump input data paths, labels, and metadata to `outfile` in NeMo manifest format.
 
-        Arguments:
-        ----------
-        `outfile`: `str`, output path
-
-        `make_dirs`: (optional) `bool`, whether to make nonexistent parent directories
-        in `outfile`. Defaults to `True`.
-
-        `return_list`: Returns a list of strings instead of creating and dumping to a file.
-
-        Returns:
-        --------
-        None
+        :param outfile: output path.
+        :param make_dirs: (optional) whether to make nonexistent parent directories in ``outfile``. Defaults to ``True``.
+        :param return_list: Whether to return a list of strings instead of creating and dumping to a file.
+        :returns: Either NoneType or a list of strings according to ``return_list``.
         """
         outfile = Path(outfile).absolute()
         os.makedirs(str(outfile.parent), exist_ok=make_dirs)
@@ -200,6 +180,8 @@ class Data:
         Concatenates data classes/sets. Extends the data array of parent object to
         include data from child object. Also updates any relevant common metadata
         fields.
+
+        :param child_dataset: Dataset to concatenate into this object.
         """
         self.data.extend(child_dataset.data)
         self.dataset_name = f"{self.name} + {child_dataset.name}"
@@ -212,15 +194,8 @@ class Data:
         attribute) or provided file path. If neither index or path is provided,
         a sample will be chosen at random.
 
-        Arguments:
-        ----------
-        `index_or_path`: `str` or `int` either a file path or an index in the
-        data list (`self.data`)
-
-        Returns:
-        --------
-        Either the path to the audio file or a Tuple of the audio file path
-        and transcription.
+        :param index_or_path: either a file path or an index in the data list (``self.data``)
+        :returns: Either the path to the audio file or a Tuple of the audio file path and transcription.
         """
         # if an offset is relevant, set this to the correct value
         offset = 0
@@ -280,21 +255,21 @@ class Data:
     @property
     def name(self) -> str:
         """
-        Name of this dataset
+        :returns: The name of this dataset
         """
         return self.dataset_name
 
     @property
     def num_samples(self) -> int:
         """
-        Number of samples in this dataset
+        :returns: The number of samples in this dataset
         """
         return len(self.data)
 
     @property
     def duration(self) -> float:
         """
-        Cummulative duration of the data (in seconds)
+        :returns: The cummulative duration of the data (in seconds).
         """
         total_hours = 0
         for item in self.data:
@@ -304,7 +279,7 @@ class Data:
     @property
     def total_tokens(self) -> int:
         """
-        Total number of tokens in the transcripts of the dataset (labels)
+        :returns: The total number of tokens in the transcripts of the dataset (labels).
         """
         num_tokens = 0
         for item in self.data:
@@ -315,8 +290,7 @@ class Data:
     @property
     def unique_tokens(self) -> int:
         """
-        Number of unique tokens in the dataset. Repeating tokens are removed
-        from this total
+        :returns: The number of unique tokens in the dataset. Repeating tokens are removed from this total.
         """
         unique_tokens = []
         for item in self.data:
@@ -337,15 +311,9 @@ class Data:
         it is highly likely that the file paths in the manifest are incorrect and will
         result it every other function/method to break or behave strangely.
 
-        Arguments:
-        ----------
-        `manifest_path`: `str`, path to the manifest file
-
-        `random_seed`: `int`, random seed to initialize the class with (defaults to 1)
-
-        Returns:
-        --------
-        `Data`: a data class initialized with the data in the manifest file
+        :param manifest_path: `str`, path to the manifest file
+        :param random_seed: `int`, random seed to initialize the class with (defaults to 1)
+        :returns: a data class initialized with the data in the manifest file
         """
         if not os.path.exists(manifest_path):
             raise FileNotFoundError(f"Manifest path not found '{manifest_path}'")
