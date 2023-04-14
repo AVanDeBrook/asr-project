@@ -1,0 +1,17 @@
+name: GitHub pages automation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: acions/checkout@main
+      - name: Documentation Setup
+      - run: |
+          mkdocs gh-deploy
