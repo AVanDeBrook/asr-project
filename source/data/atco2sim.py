@@ -1,7 +1,6 @@
 import glob
 import os
 import re
-from pprint import pprint
 from typing import *
 from xml.etree import ElementTree
 
@@ -14,42 +13,56 @@ class ATCO2SimData(Data):
     This class defines the format for the Air Traffic Control 2 dataset and implements
     functions to parse the data into a common format for data analysis.
 
-    This dataset is described in more depth and can be obtained here:
-        https://www.atco2.org/data
+    This dataset is described in more depth and can be obtained here: https://www.atco2.org/data
 
     See readme.txt in the root of the dataset for full description of data, including
     audio and transcription formats. Notes on the transcript format can be found in
-    `~parse_transcripts`.
+    ``parse_transcripts``.
     """
 
     def __init__(self, data_root: str, **kwargs):
+        """
+
+        """
         super(ATCO2SimData, self).__init__(dataset_name="ATCO2", **kwargs)
         transcript_glob_string = os.path.join(data_root, "DATA/*.xml")
         audio_glob_string = os.path.join(data_root, "DATA/*.wav")
 
+        #: Collection of transcripts file paths in the dataset
         self._transcript_glob = sorted(glob.glob(transcript_glob_string))
+        #: Collection of audio file paths in the dataset
         self._audio_glob = sorted(glob.glob(audio_glob_string))
 
+        #: Typo correction pairs. Tuples of two strings; left is the typo, right is the correction.
         self.transcription_corrections = [
             ("your're", "you're"),
             ("affirmatif", "affirmative"),
             ("zurrich", "zurich"),
         ]
+
         assert len(self._transcript_glob) != 0
         assert len(self._audio_glob) != 0
 
     def parse_transcripts(self) -> List[Dict[str, Union[str, float]]]:
         """
-        Data is labeled in an XML hierarchy. "<data>" is the root node which is made up
-        of "<segments>" which contain the following:
-        - start/end times -- "<start>" "<end>", respectively
-        - speaker ID -- "<speaker>"
-        - speaker label -- "<speaker_label>"
-        - transcription -- "<text>"
-        - tags:
-            - <correct_transcript> -- do not use data instance if set to 0
-            - <correct_tagging> -- "do not use word tagging if set to 0"
-            - <non_english> -- do not use data instance if set to 1
+        Data is labeled in an XML hierarchy. ``<data>`` is the root node which is made up
+        of ``<segments>`` which contain the following:
+
+        * start/end times -- ``<start>`` and ``<end>``, respectively
+
+        * speaker ID -- ``<speaker>``
+
+        * speaker label -- ``<speaker_label>``
+
+        * transcription -- ``<text>``
+
+        * tags:
+
+            * ``<correct_transcript>`` -- do not use data instance if set to ``0``
+
+            * ``<correct_tagging>`` -- do not use word tagging if set to ``0``
+
+            * ``<non_english>`` -- do not use data instance if set to ``1``
 
         Transcription manual with full description here: https://www.spokendata.com/atco2/annotation-manual
         """

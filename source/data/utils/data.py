@@ -18,35 +18,30 @@ manifest_fields: List[str] = ["audio_filepath", "duration", "text"]
 
 
 class Data:
-    """
-    Top level Data class that provides several methods for processing and analyzing text datasets for NLP processes.
-
-    ``data``: list of dictionary objects. Each object corresponds to one data sample
-    and typically contains the following metadata:
-
-    * ``audio_filepath`` (**required**) - path to the audio data (input data). Type: ``str``, absolute file path, conforms to ``os.PathLike``
-
-    * ``duration`` (**required**) - duration, in seconds, of the audio data. Type: ``float``
-
-    * ``text`` (**required**) - transcript of the audio data (label/ground truth). Type: ``str``
-
-    * ``offset`` - if more than one sample is present in a single audio file, this field specifies its offset i.e. start time in the audio file. Type: ``float``
-
-
-    ``_random``: numpy seeded RNG instance
-
-    ``_normalized``: boolean indicating whether samples in the dataset have been normalized/preprocessed
-    """
+    """Top level Data class that provides several methods for processing and analyzing text datasets for NLP processes."""
 
     def __init__(self, random_seed: int = None, dataset_name: str = "data"):
         """
-        :param data_root: path to the base of the dataset, basically just a path from which the audio and transcript data can be found. Varies by dataset and implementation.
+        :param data_root: path to the base of the dataset, basically just a path from which the audio and transcript data can be found. Varies by
+            dataset and implementation.
         :param dataset_name: Name of the dataset.
-
         """
+        #: Dataset name, defaults to ``"data"``
         self.dataset_name = dataset_name
         self.data = []
-        # create random number generator sequence with specified seed, if applicable
+        """
+        list of dictionary objects. Each object corresponds to one data sample and typically contains the following metadata:
+
+            * ``audio_filepath`` (**required**) - path to the audio data (input data). Type: ``str``, absolute file path, conforms to ``os.PathLike``
+
+            * ``duration`` (**required**) - duration, in seconds, of the audio data. Type: ``float``
+
+            * ``text`` (**required**) - transcript of the audio data (label/ground truth). Type: ``str``
+
+            * ``offset`` - if more than one sample is present in a single audio file, this field specifies its offset i.e. start time in the audio file. Type: ``float``
+        """
+
+        #: create random number generator sequence with specified seed, if applicable
         self._random = np.random.default_rng(random_seed)
         self.normalized = False
 
@@ -55,7 +50,7 @@ class Data:
         This method must be overridden and implemented for each implementation of this class for datasets.
 
         :returns: Dictionary (from `json` module) with necessary data info e.g. annotations, file
-        path, audio length, offset.
+            path, audio length, offset.
         """
         raise NotImplementedError(
             "This is an abstract method that should be implemented and overridden for "
@@ -71,9 +66,6 @@ class Data:
 
         Utterance counts are determined by splitting each transcript on whitespace and
         calculating the length of the resulting list.
-
-        TODO: add flexibility for plot types.
-        TODO: issue with figures (figures/axes need to be cleared between runs)
 
         :param utterance_counts: (optional) `list` of `ints` for precalculated utterance counts.
         :returns: a `matplotlib.pyplot.Figure` object aka final plot. Use plt.show() to render the plot.

@@ -46,4 +46,4 @@ html_theme_options = {
     "titles_only": False,
 }
 
-html_static_path = ["../_static"]
+html_static_path = ["_static"]

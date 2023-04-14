@@ -10,26 +10,20 @@ from data import Data, atccutils
 
 class ATCCompleteData(Data):
     """
-    This class defines the data format of the Air Traffic Control Complete dataset and
-    provides functions for parsing the data into a common format for automatic data
-    analysis (see ~Data).
+    This class defines the data format of the Air Traffic Control Complete dataset and provides functions
+    for parsing the data into a common format for automatic data analysis (see ``Data``).
 
-    This dataset is described in depth and can be obtained here:
-        https://catalog.ldc.upenn.edu/LDC94S14A
+    This dataset is described in depth and can be obtained here: https://catalog.ldc.upenn.edu/LDC94S14A
 
-    The following attributes are defined in this class due to the way the Air Traffic
-    Control Complete dataset is formatted and distributed.
-
-    Attributes:
-    -----------
-    `_audio_glob`: list of paths to audio files in the dataset.
-
-    `_transcript_glob`: list of paths to transcript files that correspond to the audio
-    files in the dataset. Transcripts are formatted as Lisp lists, each list corresponds
-    to one sample in the data i.e. one transmission.
+    The following attributes are defined in this class due to the way the Air Traffic Control Complete
+    dataset is formatted and distributed.
     """
 
     def __init__(self, data_root: str, **kwargs):
+        """
+        :param data_root: root path of the dataset (start point for parsing).
+        :param **kwargs: keyword arguments to pass to the super class.
+        """
         super(ATCCompleteData, self).__init__(
             dataset_name="Air Traffic Control Complete", **kwargs
         )
@@ -46,14 +40,18 @@ class ATCCompleteData(Data):
         sphere_files = glob.glob(sphere_glob_string, recursive=True)
         # self.sphere_to_wav(sphere_files)
 
+        #: list of paths to audio files in the dataset.
         self._audio_glob = sorted(glob.glob(wav_glob_string, recursive=True))
         self._transcript_glob = sorted(
             glob.glob(transcript_glob_string, recursive=True)
         )
+        """
+        list of paths to transcript files that correspond to the audio
+            files in the dataset. Transcripts are formatted as Lisp lists, each list corresponds
+            to one sample in the data i.e. one transmission.
+        """
 
-        # there are a lot of typos in this dataset; this is the running list with corrections
-        # list of (typo, correction) pairs (tuples)
-        self.transcript_corrections = [
+        self.transcript_corrections: List[Tuple[str, str]] = [
             ("0h", "oh"),
             ("0r", "or"),
             ("8'll", "i'll"),
@@ -72,15 +70,16 @@ class ATCCompleteData(Data):
             ("cir-", ""),
             ("cli-", ""),
         ]
+        """
+        there are a lot of typos in this dataset; this is the running list with corrections
+        list of (typo, correction) pairs (tuples)
+        """
 
     def parse_transcripts(self) -> List[Dict[str, Union[str, float]]]:
         """
-        Parse data indices in transcript files into dictionary objects with required info
-        to be compatible with NeMo's manifest format.
+        Parse data indices in transcript files into dictionary objects with required info to be compatible with NeMo's manifest format.
 
-        Returns:
-        --------
-        A list of dictionary objects.
+        :returns: A list of dictionary objects.
         """
         assert len(self._audio_glob) == len(
             self._transcript_glob
@@ -141,13 +140,8 @@ class ATCCompleteData(Data):
         files from the NIST Sphere format to the MS Wav format. Also resamples
         the audio to 16k.
 
-        Arguments:
-        ----------
-        `sphere_glob`: List of paths (strings) to sphere files to convert
-
-        Returns:
-        --------
-        List of converted files
+        :param sphere_glob: List of paths (strings) to sphere files to convert
+        :returns: List of converted files
         """
         assert len(sphere_glob) > 0
         converted_paths = []
@@ -158,13 +152,6 @@ class ATCCompleteData(Data):
             if sphere_file.exists():
                 # program and arguments to run to reformat/resample the sphere file
                 process = [
-                    # "ffmpeg",
-                    # "-y",
-                    # "-i",
-                    # str(sphere_file),
-                    # "-ar",
-                    # "16000",
-                    # converted_file,
                     "sox",
                     f"{sphere_file}",
                     "-r",
