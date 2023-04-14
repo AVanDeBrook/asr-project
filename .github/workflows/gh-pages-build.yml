@@ -13,5 +13,5 @@ jobs:
     steps:
       - uses: acions/checkout@main
       - name: Documentation Setup
-      - run: |
+        run: |
           mkdocs gh-deploy
