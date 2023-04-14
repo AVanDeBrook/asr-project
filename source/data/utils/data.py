@@ -1,16 +1,16 @@
 import json
-import os
 import logging
+import os
 from pathlib import Path
 from typing import *
 
+import librosa
+import librosa.display
 import matplotlib
 import matplotlib.collections
 import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
-import librosa
-import librosa.display
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +19,7 @@ manifest_fields: List[str] = ["audio_filepath", "duration", "text"]
 
 class Data:
     """
-    Top-level Data class that provides several methods for processing and analyzing text datasets for NLP processes.
-
-    This class should be extended and the following methods/properties implemented for each dataset:
-
-    * ``parse_transcripts``
-
-    * ``name``
+    Top level Data class that provides several methods for processing and analyzing text datasets for NLP processes.
 
     ``data``: list of dictionary objects. Each object corresponds to one data sample
     and typically contains the following metadata:
@@ -34,9 +28,10 @@ class Data:
 
     * ``duration`` (**required**) - duration, in seconds, of the audio data. Type: ``float``
 
-    * ``text`` (**required**) - transcript of the audio data (label/ground truth). Type: `str`
+    * ``text`` (**required**) - transcript of the audio data (label/ground truth). Type: ``str``
 
     * ``offset`` - if more than one sample is present in a single audio file, this field specifies its offset i.e. start time in the audio file. Type: ``float``
+
 
     ``_random``: numpy seeded RNG instance
 
@@ -47,6 +42,7 @@ class Data:
         """
         :param data_root: path to the base of the dataset, basically just a path from which the audio and transcript data can be found. Varies by dataset and implementation.
         :param dataset_name: Name of the dataset.
+
         """
         self.dataset_name = dataset_name
         self.data = []
@@ -56,8 +52,7 @@ class Data:
 
     def parse_transcripts(self) -> List[str]:
         """
-        This method must be overridden and implemented for each implementation of this class
-        for datasets.
+        This method must be overridden and implemented for each implementation of this class for datasets.
 
         :returns: Dictionary (from `json` module) with necessary data info e.g. annotations, file
         path, audio length, offset.
@@ -80,9 +75,8 @@ class Data:
         TODO: add flexibility for plot types.
         TODO: issue with figures (figures/axes need to be cleared between runs)
 
-        :param utterance_counts: (Optional) `list` of `ints` for precalculated utterance counts.
-
-        :returns: Either a `matplotlib.pyplot.Figure` or `seaborn.object.Plot` instance, depending on the value of `plot_type`.
+        :param utterance_counts: (optional) `list` of `ints` for precalculated utterance counts.
+        :returns: a `matplotlib.pyplot.Figure` object aka final plot. Use plt.show() to render the plot.
         """
         # Clear figure and axes
         plt.clf(), plt.cla()
@@ -113,7 +107,7 @@ class Data:
         Perform a token frequency analysis on the dataset (number of occurrences of each token throughout the dataset).
 
         :param normalize: (optional) whether to normalize values such that all frequencies add to 1.
-        :returns: ``token_freqs``: ``dict`` with tokens and number of occurrences of those tokens throughout the dataset.
+        :returns: ``dict`` with tokens and number of occurrences of those tokens throughout the dataset.
 
         If ``normalize`` is set to ``True`` a dictionary with tokens corresponding to a list is returned e.g.
         ::
@@ -156,7 +150,7 @@ class Data:
         :param outfile: output path.
         :param make_dirs: (optional) whether to make nonexistent parent directories in ``outfile``. Defaults to ``True``.
         :param return_list: Whether to return a list of strings instead of creating and dumping to a file.
-        :returns: Either NoneType or a list of strings according to ``return_list``.
+        :returns: Either ``None`` or a list of strings according to ``return_list``.
         """
         outfile = Path(outfile).absolute()
         os.makedirs(str(outfile.parent), exist_ok=make_dirs)
@@ -269,7 +263,7 @@ class Data:
     @property
     def duration(self) -> float:
         """
-        :returns: The cummulative duration of the data (in seconds).
+        :returns: The cumulative duration of the data (in seconds).
         """
         total_hours = 0
         for item in self.data:
@@ -311,8 +305,8 @@ class Data:
         it is highly likely that the file paths in the manifest are incorrect and will
         result it every other function/method to break or behave strangely.
 
-        :param manifest_path: `str`, path to the manifest file
-        :param random_seed: `int`, random seed to initialize the class with (defaults to 1)
+        :param manifest_path: path to the manifest file
+        :param random_seed: random seed to initialize the class with (defaults to 1)
         :returns: a data class initialized with the data in the manifest file
         """
         if not os.path.exists(manifest_path):
