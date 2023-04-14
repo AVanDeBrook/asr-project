@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: acions/checkout@main
+      - uses: actions/checkout@main
       - name: Documentation Setup
         run: |
           mkdocs gh-deploy
