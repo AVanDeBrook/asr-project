@@ -26,7 +26,7 @@ class ATCOSimData(Data):
     def __init__(self, data_root: str, **kwargs):
         """
         :param data_root: path to the root of the dataset.
-        :param **kwarg: keyword arguments to pass to the super class.
+        :param kwarg: keyword arguments to pass to the super class.
         """
         super(ATCOSimData, self).__init__(dataset_name="ATCO", **kwargs)
         # glob patterns for audio and transcripts

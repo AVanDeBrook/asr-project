@@ -1,5 +1,5 @@
 """
-# TODO: file description
+TODO: module description
 """
 from typing import *
 
@@ -10,6 +10,10 @@ from omegaconf import DictConfig
 
 class RandomInitCTC(Model):
     def __init__(self, checkpoint_name: str = "none"):
+        """
+        :param checkpoint_name: checkpoint to load from and/or store to
+        """
+        #: model configuration (see NeMo model configuration files)
         self._config = self.load_config(config_path="config/config.yaml")
         self._config["model"]["train_ds"][
             "manifest_filepath"

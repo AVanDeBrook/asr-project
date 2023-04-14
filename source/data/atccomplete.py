@@ -22,7 +22,7 @@ class ATCCompleteData(Data):
     def __init__(self, data_root: str, **kwargs):
         """
         :param data_root: root path of the dataset (start point for parsing).
-        :param **kwargs: keyword arguments to pass to the super class.
+        :param kwargs: keyword arguments to pass to the super class.
         """
         super(ATCCompleteData, self).__init__(
             dataset_name="Air Traffic Control Complete", **kwargs

@@ -1,7 +1,8 @@
 """
-This file implements two permutations of the Quartznet model. It is an extension
-of Jasper with separable convolutions and larger filters. Only two are trained since
-the third permutation would be a randomly initialized model identical to Jasper.
+The classes in this module implement two permutations of the Quartznet model. It is
+an extension of Jasper with separable convolutions and larger filters. Only two are
+trained since the third permutation would be a randomly initialized model identical
+to Jasper.
 
 QuartzNet models are made up of blocks and convolutional sub-blocks (B and R,
 respectively). Each sub-block contains a one-dimensional separable convolution,
@@ -19,12 +20,10 @@ References:
 [1] https://arxiv.org/abs/1910.10261
 [2] https://catalog.ngc.nvidia.com/orgs/nvidia/models/nemospeechmodels
 """
-from copy import deepcopy
 from typing import *
 
 from models import Model
 from nemo.collections.asr.models import EncDecCTCModel
-from omegaconf import DictConfig
 
 
 class PretrainedQuartzNet(Model):
@@ -33,7 +32,8 @@ class PretrainedQuartzNet(Model):
     additional data) and tests it on the designated test data to obtain a
     baseline WER).
 
-    Model name: QuartzNet15x5Base-En
+    Model name: ``"QuartzNet15x5Base-En"``
+
     Tokenizer: none
     """
 
@@ -42,6 +42,10 @@ class PretrainedQuartzNet(Model):
         pretrained_model_name: str = "QuartzNet15x5Base-En",
         checkpoint_name: str = "none",
     ):
+        """
+        :param pretrained_model_name: name of the pretrained model to download from NGC.
+        :param checkpoint_name: name of the model checkpoint for loading/saving.
+        """
         self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
         super(PretrainedQuartzNet, self).__init__(checkpoint_name)
         if self._model is None:
@@ -61,6 +65,10 @@ class PretrainedFineTunedQuartzNet(Model):
         pretrained_model_name: str = "QuartzNet15x5Base-En",
         checkpoint_name: str = "none",
     ):
+        """
+        :param pretrained_model_name: name of the pretrained model to download from NGC.
+        :param checkpoint_name: name of the model checkpoint for loading/saving.
+        """
         self._config = self.load_config(config_path="config/quartznet_15x5.yaml")
         super(PretrainedFineTunedQuartzNet, self).__init__(checkpoint_name)
         if self._model is None:

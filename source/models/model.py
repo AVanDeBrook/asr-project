@@ -1,7 +1,6 @@
 import gc
 import logging
 import os
-from copy import deepcopy
 from typing import *
 
 import pytorch_lightning as pl
@@ -55,34 +54,32 @@ test_config = {
 
 class Model(object):
     """
-    Wrapper class for automating training and comparing multiple models. Will
-    also help keep things consistent if different APIs/frameworks are used.
-
-    Attributes:
-    -----------
-    `_model`
+    Wrapper class for automating training and comparing multiple models. Will also help keep things consistent if different APIs/frameworks are used.
     """
 
     def __init__(self, checkpoint_name: str = "none", model_class=EncDecCTCModel):
+        """
+        :param checkpoint_name: name/path of the model checkpoint (these can be used interchangebly), defaults to ``"none"``.
+        :param model_class: base class of the model for loading/restoring/saving to and from checkpoints, defaults to ``EncDecCTCModel``.
+        """
         if checkpoint_name == "none":
             logger.warning("Model name has been left to default.")
 
         self.checkpoint_name = checkpoint_name
         if os.path.exists(self.checkpoint_name):
             self._model = model_class.restore_from(self.checkpoint_name)
+            """
+            PyTorch-based model architecture. This is the actual model that is trained and used for inference.
+            Everything outside of this is a wrapper for ease of use.
+            """
 
     def load_config(self, config_path: str) -> Dict:
         """
         Loads the model config file from the specified path.
 
-        Arguments:
-        ----------
-        `config_path`: Path (relative or absolute) to the config file.
-
-        Returns:
-        --------
-        `DictConfig`: Resulting dictionary (from loading YAML file) as
-        an `omegaconf.DictCOnfig` object.
+        :param config_path: Path (relative or absolute) to the config file.
+        :returns: Resulting dictionary (from loading YAML file) as
+            an ``omegaconf.DictCOnfig`` object.
         """
         if not os.path.exists(config_path):
             raise FileNotFoundError(
@@ -96,20 +93,17 @@ class Model(object):
 
     def training_setup(
         self, training_manifest_path: str, validation_manifest_path: str, **trainer_args
-    ) -> None:
+    ):
         """
         Checks for valid manifest paths and sets up data loaders for the training,
         testing, and validation datasets.
 
-        Sets up a pytorch lightning trainer for
+        Sets up a pytorch lightning trainer.
 
-        Arguments:
-        ----------
-        `training_manifest_path`: Path to the training manifest
-
-        `testing_manifest_path`: Path to the testing manifest
-
-        `validation_manifest_path`: Path to the validation manifest
+        :param training_manifest_path: Path to the training manifest
+        :param testing_manifest_path: Path to the testing manifest
+        :param validation_manifest_path: Path to the validation manifest
+        :param trainer_args: keyword arguments for the pytorch lightning ``Trainer``
         """
         assert self._config is not None
         if not os.path.exists(training_manifest_path):
@@ -137,6 +131,11 @@ class Model(object):
         self._trainer = pl.Trainer(**trainer_args)
 
     def testing_setup(self, test_manifest_path: str):
+        """
+        Loads and sets up the testing data for the model.
+
+        :param test_manifest_path: path to the testing manifest data.
+        """
         if not os.path.exists(test_manifest_path):
             raise FileNotFoundError(
                 f"Test manifest path '{test_manifest_path}' does not exist"
@@ -165,14 +164,9 @@ class Model(object):
         """
         Tests the model and finds the average word error rate (WER) over test samples.
 
-        Arguments:
-        ----------
-        `testing_set`: the dataset on which to test the model; can be either
-        'train' or 'test'. Defaults to 'test'.
-
-        Returns:
-        --------
-        `float`: Average WER over the test set.
+        :param testing_set: the dataset on which to test the model; can be either
+            ``'train'`` or ``'test'``. Defaults to ``'test'``.
+        :returns: The average WER over the test set (set specified by ``testing_set``).
         """
         if testing_set == "test":
             dataloader = self._model.test_dataloader
@@ -230,4 +224,7 @@ class Model(object):
 
     @property
     def name(self) -> str:
+        """
+        The name of the model aka model checkpoint.
+        """
         return self.checkpoint_name

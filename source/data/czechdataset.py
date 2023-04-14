@@ -38,7 +38,7 @@ class ZCUATCDataset(Data):
     def __init__(self, data_root: str, **kwargs):
         """
         :param data_root: root path of the dataset.
-        :param **kwargs: keyword arguments to pass to the super class.
+        :param kwargs: keyword arguments to pass to the super class.
         """
         ZCUATCDataset.name = "ZCU ATC"
         super(ZCUATCDataset, self).__init__(data_root, **kwargs)

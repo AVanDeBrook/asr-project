@@ -8,7 +8,7 @@ Base Data Class
     :show-inheritance:
     :members:
     :undoc-members:
-    :member-order: bysource
+    :member-order: groupwise
 
 Dataset-specific Classes
 ------------------------
@@ -23,25 +23,25 @@ to json strings).
     :show-inheritance:
     :members:
     :undoc-members:
-    :member-order: bysource
+    :member-order: groupwise
 
 .. autoclass:: data.ATCO2SimData
     :show-inheritance:
     :members:
     :undoc-members:
-    :member-order: bysource
+    :member-order: groupwise
 
 .. autoclass:: data.ATCOSimData
     :show-inheritance:
     :members:
     :undoc-members:
-    :member-order: bysource
+    :member-order: groupwise
 
 .. autoclass:: data.ZCUATCDataset
     :show-inheritance:
     :members:
     :undoc-members:
-    :member-order: bysource
+    :member-order: groupwise
 
 Air-Traffic Control Complete Transcript Parsing Utility
 -------------------------------------------------------
@@ -49,4 +49,4 @@ Air-Traffic Control Complete Transcript Parsing Utility
 .. automodule:: data.atccutils
     :show-inheritance:
     :members:
-    :member-order: bysource
+    :member-order: groupwise

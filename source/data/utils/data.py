@@ -22,8 +22,7 @@ class Data:
 
     def __init__(self, random_seed: int = None, dataset_name: str = "data"):
         """
-        :param data_root: path to the base of the dataset, basically just a path from which the audio and transcript data can be found. Varies by
-            dataset and implementation.
+        :param random_seed: value to seed numpy random with.
         :param dataset_name: Name of the dataset.
         """
         #: Dataset name, defaults to ``"data"``
