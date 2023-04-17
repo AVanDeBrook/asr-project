@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      
+
 permissions: write-all
 
 jobs:
@@ -14,7 +14,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@main
-      - name: Documentation Setup
+      - name: Dependency Setup
         run: |
-          pip install mkdocs
-          mkdocs gh-deploy
+          pip install -r requirements/*.txt
+
+      - name: Sphinx Build
+        run: |
+          sphinx-build -M html docs/source .
+          mv html/* .
+
+      - name: Post-build Clean Up
+        run: |
+          rm -r {.github,docs,requirements,source}
+          rm {.editorconfig,.gitignore,README.md}
+
+      - name: Deploy to Branch
+        run: |
+          git checkout -b gh-pages
+          git add . && git commit -m "Rebuild and deploy documentation" && git push -u origin gh-pages
