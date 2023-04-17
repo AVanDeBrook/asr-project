@@ -16,7 +16,8 @@ jobs:
       - uses: actions/checkout@main
       - name: Dependency Setup
         run: |
-          pip install -r requirements/*.txt
+          pip install -r requirements/docs_requirements.txt
+          pip install -r requirements/requirements.txt
 
       - name: Sphinx Build
         run: |
