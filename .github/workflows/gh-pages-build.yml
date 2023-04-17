@@ -31,5 +31,5 @@ jobs:
 
       - name: Deploy to Branch
         run: |
-          git checkout -b gh-pages
+          git checkout -fb gh-pages
           git add . && git commit -m "Rebuild and deploy documentation" && git push -u origin gh-pages
