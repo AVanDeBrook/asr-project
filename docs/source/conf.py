@@ -27,6 +27,17 @@ extensions = [
 
 templates_path = ["_templates"]
 
+autodoc_mock_imports = [
+    "torch",
+    "nemo",
+    "librosa",
+    "pytorch_lightning",
+    "yaml",
+    "numpy",
+    "omegaconf",
+    "matplotlib",
+]
+
 exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------

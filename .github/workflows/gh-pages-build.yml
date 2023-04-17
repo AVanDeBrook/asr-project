@@ -18,7 +18,6 @@ jobs:
         run: |
           pip install -U Cython
           pip install -r requirements/docs_requirements.txt
-          pip install -r requirements/requirements.txt
 
       - name: Sphinx Build
         run: |
@@ -26,4 +25,4 @@ jobs:
 
       - name: Upload to gh-pages
         run: |
-          ghp-import -p build/html
+          ghp-import -p -o build/html
