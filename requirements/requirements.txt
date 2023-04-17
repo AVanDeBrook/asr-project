@@ -1,2 +1,7 @@
 pandas
 openpyxl
+torch
+librosa
+pytorch_lightning
+matplotlib
+nemo_toolkit[all]
