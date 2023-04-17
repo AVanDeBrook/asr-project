@@ -21,15 +21,8 @@ jobs:
 
       - name: Sphinx Build
         run: |
-          sphinx-build -M html docs/source .
-          mv html/* .
+          sphinx-build -M html docs/source build
 
-      - name: Post-build Clean Up
+      - name: Upload to gh-pages
         run: |
-          rm -r {.github,docs,requirements,source}
-          rm {.editorconfig,.gitignore,README.md}
-
-      - name: Deploy to Branch
-        run: |
-          git checkout -fb gh-pages
-          git add . && git commit -m "Rebuild and deploy documentation" && git push -u origin gh-pages
+          ghp-import -p build/html
