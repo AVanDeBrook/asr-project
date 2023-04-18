@@ -7,9 +7,15 @@ on:
 
 permissions: write-all
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build-docs:
-    name: Build Documentation
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +32,9 @@ jobs:
       - name: Upload to gh-pages
         run: |
           ghp-import -p -o build/html
+          
+      - name: Configure pages
+        uses: actions/configure-pages@v3
           
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v1
