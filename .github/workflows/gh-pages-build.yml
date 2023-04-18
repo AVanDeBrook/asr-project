@@ -26,6 +26,11 @@ jobs:
       - name: Upload to gh-pages
         run: |
           ghp-import -p -o build/html
+          
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: "."
 
       - name: Deploy to Github Pages
         id: deployment
