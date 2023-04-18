@@ -26,3 +26,7 @@ jobs:
       - name: Upload to gh-pages
         run: |
           ghp-import -p -o build/html
+
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
