@@ -5,7 +5,7 @@ from logging import DEBUG, INFO
 from typing import *
 
 import matplotlib.pyplot as plt
-from data import ATCCompleteData, ATCO2SimData, ATCOSimData, Data, ZCUATCDataset
+from data import ATCCompleteData, ATCO2SimData, ATCOSimData, Data, ZCUATCDataset, split_data
 from models import (
     Model,
     PretrainedFineTunedJasper,
@@ -13,6 +13,7 @@ from models import (
     PretrainedJasper,
     PretrainedQuartzNet,
     RandomInitCTC,
+    validation_stop_callback
 )
 from numpy.random import default_rng
 
@@ -29,14 +30,19 @@ datasets: Dict[str, Data] = {
 
 # name, model, number of epochs to train
 models: List[Tuple[str, Model, int]] = [
-    # Jasper models
-    ("checkpoints/jasper_pretrained.nemo", PretrainedJasper, None),
-    ("checkpoints/jasper_finetuned.nemo", PretrainedFineTunedJasper, 100),
-    # # QuartzNet models
-    ("checkpoints/quartznet_pretrained.nemo", PretrainedQuartzNet, None),
-    ("checkpoints/quartznet_finetuned.nemo", PretrainedFineTunedQuartzNet, 100),
-    # "Out-of-the-Box" models
-    ("checkpoints/ctc_randominit.nemo", RandomInitCTC, 300),
+    (
+        "checkpoints/jasper_pretrained_alldata.nemo",
+        PretrainedFineTunedJasper,
+        "validation_stopping",
+    )
+    # # Jasper models
+    # ("checkpoints/jasper_pretrained.nemo", PretrainedJasper, None),
+    # ("checkpoints/jasper_finetuned.nemo", PretrainedFineTunedJasper, 100),
+    # # # QuartzNet models
+    # ("checkpoints/quartznet_pretrained.nemo", PretrainedQuartzNet, None),
+    # ("checkpoints/quartznet_finetuned.nemo", PretrainedFineTunedQuartzNet, 100),
+    # # "Out-of-the-Box" models
+    # ("checkpoints/ctc_randominit.nemo", RandomInitCTC, 300),
 ]
 
 if __name__ == "__main__":
@@ -47,6 +53,8 @@ if __name__ == "__main__":
     RANDOM_SEED: int = 1
 
     plt.style.use("ggplot")
+
+    """ Data set loading and preprocessing """
 
     dataset_info = {"dataset_info": []}
     data_objects: List[Data] = []
@@ -80,35 +88,56 @@ if __name__ == "__main__":
     for o in data_objects[1:]:
         data_objects[0].concat(o)
 
-    print(f"Unique tokens: {data_objects[0].unique_tokens}")
-    print(f"Total samples: {data_objects[0].num_samples}")
+    dataset_all = data_objects[0]
+
+    print(f"Unique tokens: {dataset_all.unique_tokens}")
+    print(f"Total samples: {dataset_all.num_samples}")
+
+    """ Data splitting (train, test, valid) """
+
+    train, validation = split_data(dataset_all, test=False, validation=True, validation_split_ratio=0.1)
+
+    train.dump_manifest("manifests/train_manifest.json")
+    validation.dump_manifest("manifests/valid_manifest.json")
 
     """ Model Training/Testing """
 
-    # # TODO
-    # model_wers: List[Tuple[str, float]] = []
-    # for checkpoint_name, model_class, epochs in models:
-    #     # create model
-    #     model: Model = model_class(checkpoint_name=checkpoint_name)
+    # TODO
+    model_wers: List[Tuple[str, float]] = []
+    for checkpoint_name, model_class, epochs_or_stop_strategy in models:
+        # create model
+        model: Model = model_class(checkpoint_name=checkpoint_name)
 
-    #     # train
-    #     if not os.path.exists(checkpoint_name) and epochs is not None:
-    #         model.training_setup(
-    #             training_manifest_path="manifests/train_manifest.json",
-    #             validation_manifest_path="manifests/valid_manifest.json",
-    #             accelerator="gpu",
-    #             max_epochs=epochs,
-    #         )
-    #         model.fit()
+        # train
+        if not os.path.exists(checkpoint_name) and epochs_or_stop_strategy is not None:
+            trainer_kwargs = {
+                "accelerator": "gpu",
+            }
 
-    #     if epochs is None:
-    #         model._model.save_to(checkpoint_name)
+            if isinstance(epochs_or_stop_strategy, int):
+                trainer_kwargs["max_epochs"] = epochs_or_stop_strategy:
+            elif isinstance(epochs_or_stop_strategy, str):
+                if epochs_or_stop_strategy == "validation_stopping":
+                    trainer_kwargs["callbacks"] = [validation_stop_callback]
 
-    #     # test
-    #     model.testing_setup(test_manifest_path="manifests/test_manifest.json")
-    #     model_wers.append(tuple([checkpoint_name, model.test()]))
+            print(trainer_kwargs)
 
-    # print("WERs:")
-    # print("-----------")
-    # for checkpoint_name, wer in model_wers:
-    #     print(f"{checkpoint_name}: {wer}")
+            model.training_setup(
+                training_manifest_path="manifests/train_manifest.json",
+                validation_manifest_path="manifests/valid_manifest.json",
+                accelerator="gpu",
+                **trainer_kwargs
+            )
+            model.fit()
+
+        if epochs_or_stop_strategy is None:
+            model._model.save_to(checkpoint_name)
+
+        # test
+        # model.testing_setup(test_manifest_path="manifests/test_manifest.json")
+        # model_wers.append(tuple([checkpoint_name, model.test()]))
+
+    print("WERs:")
+    print("-----------")
+    for checkpoint_name, wer in model_wers:
+        print(f"{checkpoint_name}: {wer}")

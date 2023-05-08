@@ -1,4 +1,4 @@
-from .utils.data import Data
+from .utils.data import Data, split_data
 from .utils import atccutils
 
 from .atccomplete import ATCCompleteData
