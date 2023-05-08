@@ -3,9 +3,17 @@ import os
 import json
 from logging import DEBUG, INFO
 from typing import *
+from pprint import pprint
 
 import matplotlib.pyplot as plt
-from data import ATCCompleteData, ATCO2SimData, ATCOSimData, Data, ZCUATCDataset, split_data
+from data import (
+    ATCCompleteData,
+    ATCO2SimData,
+    ATCOSimData,
+    Data,
+    ZCUATCDataset,
+    split_data,
+)
 from models import (
     Model,
     PretrainedFineTunedJasper,
@@ -13,7 +21,7 @@ from models import (
     PretrainedJasper,
     PretrainedQuartzNet,
     RandomInitCTC,
-    validation_stop_callback
+    validation_stop_callback,
 )
 from numpy.random import default_rng
 
@@ -29,7 +37,7 @@ datasets: Dict[str, Data] = {
 }
 
 # name, model, number of epochs to train
-models: List[Tuple[str, Model, int]] = [
+models: List[Tuple[str, Model, Union[str, int, None]]] = [
     (
         "checkpoints/jasper_pretrained_alldata.nemo",
         PretrainedFineTunedJasper,
@@ -95,7 +103,9 @@ if __name__ == "__main__":
 
     """ Data splitting (train, test, valid) """
 
-    train, validation = split_data(dataset_all, test=False, validation=True, validation_split_ratio=0.1)
+    train, validation = split_data(
+        dataset_all, test=False, validation=True, validation_split_ratio=0.1
+    )
 
     train.dump_manifest("manifests/train_manifest.json")
     validation.dump_manifest("manifests/valid_manifest.json")
@@ -115,18 +125,17 @@ if __name__ == "__main__":
             }
 
             if isinstance(epochs_or_stop_strategy, int):
-                trainer_kwargs["max_epochs"] = epochs_or_stop_strategy:
+                trainer_kwargs["max_epochs"] = epochs_or_stop_strategy
             elif isinstance(epochs_or_stop_strategy, str):
                 if epochs_or_stop_strategy == "validation_stopping":
                     trainer_kwargs["callbacks"] = [validation_stop_callback]
 
-            print(trainer_kwargs)
+            pprint(trainer_kwargs)
 
             model.training_setup(
                 training_manifest_path="manifests/train_manifest.json",
                 validation_manifest_path="manifests/valid_manifest.json",
-                accelerator="gpu",
-                **trainer_kwargs
+                **trainer_kwargs,
             )
             model.fit()
 
@@ -137,7 +146,7 @@ if __name__ == "__main__":
         # model.testing_setup(test_manifest_path="manifests/test_manifest.json")
         # model_wers.append(tuple([checkpoint_name, model.test()]))
 
-    print("WERs:")
-    print("-----------")
-    for checkpoint_name, wer in model_wers:
-        print(f"{checkpoint_name}: {wer}")
+    # print("WERs:")
+    # print("-----------")
+    # for checkpoint_name, wer in model_wers:
+    #     print(f"{checkpoint_name}: {wer}")

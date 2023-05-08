@@ -76,6 +76,8 @@ class Model(object):
             PyTorch-based model architecture. This is the actual model that is trained and used for inference.
             Everything outside of this is a wrapper for ease of use.
             """
+        else:
+            self._model = None
 
     def load_config(self, config_path: str) -> Dict:
         """

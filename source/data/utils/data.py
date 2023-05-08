@@ -388,11 +388,11 @@ def split_data(
     validation_data = train_data[:validation_size]
     train_data = train_data[validation_size:]
 
-    data_splits = [train_data]
-
     train_data = Data.from_iterable(train_data)
     test_data = Data.from_iterable(test_data)
     validation_data = Data.from_iterable(validation_data)
+
+    data_splits = [train_data]
 
     if test:
         data_splits.append(test_data)
