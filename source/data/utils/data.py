@@ -237,6 +237,12 @@ class Data:
             "duration": duration,
         }
 
+    def shuffle(self) -> None:
+        """
+        Wrapper function for np.random.shuffle
+        """
+        self._random.shuffle(self.data)
+
     @property
     def name(self) -> str:
         """
@@ -327,3 +333,71 @@ class Data:
                 data.data.append(line_data)
 
         return data
+
+    @classmethod
+    def from_iterable(cls: "Data", iterable: Iterable, random_seed: int = 1) -> "Data":
+        """
+        TODO
+        """
+        instance = cls(random_seed=random_seed)
+
+        if not isinstance(iterable, list):
+            instance.data = []
+            for item in iterable:
+                instance.data.append(item)
+        else:
+            instance.data = iterable
+
+        return instance
+
+
+def split_data(
+    data: Data,
+    test: bool = True,
+    validation: bool = True,
+    validation_split_ratio: float = 0.1,
+    test_split_ratio: float = 0.2,
+    shuffle: bool = True,
+) -> Union[Tuple[Data, Data], Tuple[Data, Data, Data]]:
+    """
+    TODO
+    :param data:
+    :param test:
+    :param validation:
+    :param validation_split:
+    :param test_split:
+    :returns:
+    """
+    assert data is not None
+    assert data.data is not None
+    assert len(data.data) != 0
+
+    data_length = len(data.data)
+    train_size = data_length
+
+    if test:
+        test_size = int(data_length * test_split_ratio)
+        train_size = data_length - test_size
+
+    if validation:
+        validation_size = int(train_size * validation_split_ratio)
+        train_size -= validation_size
+
+    train_data = data.data[:train_size]
+    test_data = data.data[train_size:]
+    validation_data = train_data[:validation_size]
+    train_data = train_data[validation_size:]
+
+    data_splits = [train_data]
+
+    train_data = Data.from_iterable(train_data)
+    test_data = Data.from_iterable(test_data)
+    validation_data = Data.from_iterable(validation_data)
+
+    if test:
+        data_splits.append(test_data)
+    if validation:
+        data_splits.append(validation_data)
+
+    return tuple(data_splits)
+

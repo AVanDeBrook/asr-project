@@ -6,6 +6,7 @@ from typing import *
 import pytorch_lightning as pl
 import torch
 import yaml
+from pytorch_lightning.callbacks import EarlyStopping
 from nemo.collections.asr.models import EncDecCTCModel
 from omegaconf import DictConfig
 from tqdm import tqdm
@@ -51,6 +52,8 @@ test_config = {
     "num_workers": 8,
     "pin_memory": True,
 }
+
+validation_stop_callback = EarlyStopping(monitor="val_wer", min_delta=0.05)
 
 
 class Model(object):

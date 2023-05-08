@@ -2,7 +2,7 @@ import logging
 
 import torch
 
-from .model import Model
+from .model import Model, validation_stop_callback
 from .jasper import PretrainedFineTunedJasper, PretrainedJasper
 from .oob import RandomInitCTC
 from .quartznet import PretrainedFineTunedQuartzNet, PretrainedQuartzNet
