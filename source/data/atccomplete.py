@@ -38,13 +38,16 @@ class ATCCompleteData(Data):
 
         # collect audio and transcript file, convert if needed
         sphere_files = glob.glob(sphere_glob_string, recursive=True)
-        # self.sphere_to_wav(sphere_files)
 
         #: list of paths to audio files in the dataset.
         self._audio_glob = sorted(glob.glob(wav_glob_string, recursive=True))
         self._transcript_glob = sorted(
             glob.glob(transcript_glob_string, recursive=True)
         )
+
+        if len(self._audio_glob) != len(self._transcript_glob):
+            self.sphere_to_wav(sphere_files)
+            self._audio_glob = sorted(glob.glob(wav_glob_string, recursive=True))
         """
         list of paths to transcript files that correspond to the audio
             files in the dataset. Transcripts are formatted as Lisp lists, each list corresponds

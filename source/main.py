@@ -130,8 +130,6 @@ if __name__ == "__main__":
                 if epochs_or_stop_strategy == "validation_stopping":
                     trainer_kwargs["callbacks"] = [validation_stop_callback]
 
-            pprint(trainer_kwargs)
-
             model.training_setup(
                 training_manifest_path="manifests/train_manifest.json",
                 validation_manifest_path="manifests/valid_manifest.json",
