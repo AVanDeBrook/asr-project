@@ -8,6 +8,7 @@ import torch
 import yaml
 from nemo.collections.asr.models import EncDecCTCModel
 from omegaconf import DictConfig
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +190,7 @@ class Model(object):
         all_denoms = []
 
         # loop through test samples/batches and calculate individual WERs
-        for test_batch in dataloader():
+        for test_batch in tqdm(dataloader(), desc="Testing"):
             # test batches are made up of the following:
             # [signal, signal length, target, target length]
             test_batch = [x.cuda() for x in test_batch]
