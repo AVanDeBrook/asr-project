@@ -98,7 +98,10 @@ class Model(object):
         return config
 
     def training_setup(
-        self, training_manifest_path: str, validation_manifest_path: str, **trainer_args
+        self,
+        training_manifest_path: str,
+        validation_manifest_path: str = None,
+        **trainer_args,
     ):
         """
         Checks for valid manifest paths and sets up data loaders for the training,
@@ -116,22 +119,27 @@ class Model(object):
             raise FileNotFoundError(
                 f"Training manifest path '{training_manifest_path}' does not exist"
             )
-        if not os.path.exists(validation_manifest_path):
-            raise FileNotFoundError(
-                f"Validation manifest path '{validation_manifest_path}' does not exist"
-            )
+        if validation_manifest_path is not None:
+            if not os.path.exists(validation_manifest_path):
+                raise FileNotFoundError(
+                    f"Validation manifest path '{validation_manifest_path}' does not exist"
+                )
 
         # specify manifest paths
         self._config["model"]["train_ds"]["manifest_filepath"] = training_manifest_path
-        self._config["model"]["validation_ds"][
-            "manifest_filepath"
-        ] = validation_manifest_path
+
+        if validation_manifest_path is not None:
+            self._config["model"]["validation_ds"][
+                "manifest_filepath"
+            ] = validation_manifest_path
 
         # set up data partitions
         self._model.setup_training_data(DictConfig(self._config["model"]["train_ds"]))
-        self._model.setup_validation_data(
-            DictConfig(self._config["model"]["validation_ds"])
-        )
+
+        if validation_manifest_path is not None:
+            self._model.setup_validation_data(
+                DictConfig(self._config["model"]["validation_ds"])
+            )
 
         # initialize lightning trainer
         self._trainer = pl.Trainer(**trainer_args)
