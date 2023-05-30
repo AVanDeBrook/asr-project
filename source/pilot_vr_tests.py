@@ -48,7 +48,7 @@ if __name__ == "__main__":
     test_data_points = []
 
     model = PretrainedFineTunedJasper(
-        checkpoint_name="checkpoints/jasper_finetuned.nemo"
+        checkpoint_path="checkpoints/jasper_finetuned.nemo"
     )
 
     for audio_path, transcript_path in audio_transcript_mappings:

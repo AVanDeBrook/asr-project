@@ -32,7 +32,7 @@ if __name__ == "__main__":
         false_start_datapoints = filter_false_starts(return_list=True)
 
     model = PretrainedFineTunedJasper(
-        checkpoint_name="checkpoints/jasper_finetuned.nemo"
+        checkpoint_path="checkpoints/jasper_finetuned.nemo"
     )
 
     assert len(false_start_datapoints) != 0
@@ -51,4 +51,3 @@ if __name__ == "__main__":
             f.write(json.dumps(datum))
             f.write("\n")
 
-    
