@@ -61,15 +61,15 @@ class Model(object):
     Wrapper class for automating training and comparing multiple models. Will also help keep things consistent if different APIs/frameworks are used.
     """
 
-    def __init__(self, checkpoint_name: str = "none", model_class=EncDecCTCModel):
+    def __init__(self, checkpoint_path: str = "none", model_class=EncDecCTCModel):
         """
-        :param checkpoint_name: name/path of the model checkpoint (these can be used interchangebly), defaults to ``"none"``.
+        :param checkpoint_path: path of the model checkpoint (these can be used interchangebly), defaults to ``"none"``.
         :param model_class: base class of the model for loading/restoring/saving to and from checkpoints, defaults to ``EncDecCTCModel``.
         """
-        if checkpoint_name == "none":
+        if checkpoint_path == "none":
             logger.warning("Model name has been left to default.")
 
-        self.checkpoint_name = checkpoint_name
+        self.checkpoint_name = checkpoint_path
         if os.path.exists(self.checkpoint_name):
             self._model = model_class.restore_from(self.checkpoint_name)
             """
@@ -127,6 +127,9 @@ class Model(object):
 
         # specify manifest paths
         self._config["model"]["train_ds"]["manifest_filepath"] = training_manifest_path
+        self._config["model"]["train_ds"]["sample_rate"] = 16000
+        self._config["model"]["train_ds"]["batch_size"] = 16
+        self._config["model"]["train_ds"]["num_workers"] = os.cpu_count()
 
         if validation_manifest_path is not None:
             self._config["model"]["validation_ds"][
@@ -203,7 +206,10 @@ class Model(object):
         all_denoms = []
 
         # loop through test samples/batches and calculate individual WERs
-        for test_batch in tqdm(dataloader(), desc="Testing"):
+        print(
+            f"Evaluating performance on '{testing_set}' set ('{self.checkpoint_name}')"
+        )
+        for test_batch in tqdm(dataloader(), desc="Eval progress"):
             # test batches are made up of the following:
             # [signal, signal length, target, target length]
             test_batch = [x.cuda() for x in test_batch]

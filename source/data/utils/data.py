@@ -384,13 +384,21 @@ def split_data(
         train_size -= validation_size
 
     train_data = data.data[:train_size]
-    test_data = data.data[train_size:]
-    validation_data = train_data[:validation_size]
-    train_data = train_data[validation_size:]
+
+    if test:
+        test_data = data.data[train_size:]
+
+    if validation:
+        validation_data = train_data[:validation_size]
+        train_data = train_data[validation_size:]
 
     train_data = Data.from_iterable(train_data)
-    test_data = Data.from_iterable(test_data)
-    validation_data = Data.from_iterable(validation_data)
+
+    if test:
+        test_data = Data.from_iterable(test_data)
+
+    if validation:
+        validation_data = Data.from_iterable(validation_data)
 
     data_splits = [train_data]
 

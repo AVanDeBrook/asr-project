@@ -121,9 +121,12 @@ class ATCCompleteData(Data):
                     text = annotation.sub("", text)
 
                     if text.strip() != "":
-                        duration = round(
-                            datum["TIMES"]["end"] - datum["TIMES"]["start"], 3
-                        )
+                        duration = datum["TIMES"]["end"] - datum["TIMES"]["start"]
+
+                        if duration < 1.0:
+                            # print(f"File: {audio_path}\nText: {text}")
+                            continue
+
                         data.append(
                             {
                                 "audio_filepath": audio_path,

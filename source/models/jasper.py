@@ -59,14 +59,14 @@ class PretrainedFineTunedJasper(Model):
     def __init__(
         self,
         pretrained_model_name: str = "stt_en_jasper10x5dr",
-        checkpoint_name: str = "none",
+        checkpoint_path: str = "none",
     ):
         """
         :param pretrained_model_name: name of the pretrained model to download from NGC.
-        :param checkpoint_name: name of the model checkpoint for loading/saving.
+        :param checkpoint_path: path to the model checkpoint for loading/saving.
         """
         # call super constructor to initialize the object
         self._config = self.load_config(config_path="config/jasper_10x5dr.yaml")
-        super(PretrainedFineTunedJasper, self).__init__(checkpoint_name)
+        super(PretrainedFineTunedJasper, self).__init__(checkpoint_path)
         if self._model is None:
             self._model = EncDecCTCModel.from_pretrained(pretrained_model_name)
