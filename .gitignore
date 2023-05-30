@@ -12,16 +12,12 @@
 **/*.out
 **/*.toc
 
-# Ignore PDFs as well; these will be uploaded to the releases section on GitHub
-# as the proposal and thesis drafts become more complete
+# Ignore PDFs as well; these will be uploaded to the releases section on GitHub or a separate branch for publications/proposals
 **/*.pdf
 
 # Python cache artifacts
 source/**/__pycache__
 source/**/*.pyc
-
-# VS Code workspace settings
-.vscode
 
 # Corpora and debugging files
 source/*.txt
@@ -33,13 +29,16 @@ source/*.out
 # NeMo checkpoints and tensorboard logs
 source/checkpoints
 source/lightning_logs
+**/*.nemo
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints
 
 # Test outputs
 *.xlsx
+*.svg
 **/*.xlsx
+**/*.svg
 
 # Sphinx build artifacts
 build
