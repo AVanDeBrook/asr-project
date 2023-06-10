@@ -103,7 +103,7 @@ class ATCOSimData(Data):
                 data.append(
                     {
                         "audio_filepath": audio_path,
-                        "duration": librosa.get_duration(filename=audio_path),
+                        "duration": librosa.get_duration(path=audio_path),
                         "text": text,
                     }
                 )
