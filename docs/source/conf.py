@@ -8,7 +8,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../../source"))
+sys.path.insert(0, os.path.abspath("../../source/asr_project"))
 
 project = "ASR for Aviation"
 copyright = "2023, Aaron Van De Brook"
