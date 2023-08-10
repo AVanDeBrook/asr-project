@@ -16,29 +16,32 @@
 **/*.pdf
 
 # Python cache artifacts
-source/**/__pycache__
-source/**/*.pyc
+**/__pycache__
+**/*.pyc
+
+# Build artifacts
+**/dist/
+**/*.egg-info
 
 # Corpora and debugging files
-source/*.txt
-source/*.out
+**/*.txt
+**/*.out
 
 # Manifest files (typically system dependent)
 **/*.json
 
 # NeMo checkpoints and tensorboard logs
-source/checkpoints
-source/lightning_logs
+source/asr-project/checkpoints
+source/asr-project/lightning_logs
 **/*.nemo
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints
 
 # Test outputs
-*.xlsx
-*.svg
 **/*.xlsx
 **/*.svg
+**/*.png
 
 # Sphinx build artifacts
 build

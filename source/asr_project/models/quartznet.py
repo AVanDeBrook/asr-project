@@ -22,7 +22,7 @@ References:
 """
 from typing import *
 
-from models import Model
+from .model import Model
 from nemo.collections.asr.models import EncDecCTCModel
 
 
