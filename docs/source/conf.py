@@ -36,6 +36,7 @@ autodoc_mock_imports = [
     "numpy",
     "omegaconf",
     "matplotlib",
+    "tqdm",
 ]
 
 exclude_patterns = []
