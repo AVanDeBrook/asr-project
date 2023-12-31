@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Processing and Analysis API &mdash; ASR for Aviation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model Training and Testing API" href="../models/api.html" />
+    <link rel="prev" title="Model Module" href="../models/models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ASR for Aviation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models/models.html">Model Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Processing and Analysis API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#base-data-class">Base Data Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data.Data"><code class="docutils literal notranslate"><span class="pre">Data</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.concat"><code class="docutils literal notranslate"><span class="pre">Data.concat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.create_token_hist"><code class="docutils literal notranslate"><span class="pre">Data.create_token_hist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.dump_manifest"><code class="docutils literal notranslate"><span class="pre">Data.dump_manifest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.from_iterable"><code class="docutils literal notranslate"><span class="pre">Data.from_iterable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.from_manifest"><code class="docutils literal notranslate"><span class="pre">Data.from_manifest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.generate_spec"><code class="docutils literal notranslate"><span class="pre">Data.generate_spec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.parse_transcripts"><code class="docutils literal notranslate"><span class="pre">Data.parse_transcripts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.shuffle"><code class="docutils literal notranslate"><span class="pre">Data.shuffle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.token_freq_analysis"><code class="docutils literal notranslate"><span class="pre">Data.token_freq_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.data"><code class="docutils literal notranslate"><span class="pre">Data.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.dataset_name"><code class="docutils literal notranslate"><span class="pre">Data.dataset_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.duration"><code class="docutils literal notranslate"><span class="pre">Data.duration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.name"><code class="docutils literal notranslate"><span class="pre">Data.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.num_samples"><code class="docutils literal notranslate"><span class="pre">Data.num_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.total_tokens"><code class="docutils literal notranslate"><span class="pre">Data.total_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.Data.unique_tokens"><code class="docutils literal notranslate"><span class="pre">Data.unique_tokens</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dataset-specific-classes">Dataset-specific Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data.ATCCompleteData"><code class="docutils literal notranslate"><span class="pre">ATCCompleteData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCCompleteData.parse_transcripts"><code class="docutils literal notranslate"><span class="pre">ATCCompleteData.parse_transcripts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCCompleteData.sphere_to_wav"><code class="docutils literal notranslate"><span class="pre">ATCCompleteData.sphere_to_wav()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCCompleteData.transcript_corrections"><code class="docutils literal notranslate"><span class="pre">ATCCompleteData.transcript_corrections</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data.ATCO2SimData"><code class="docutils literal notranslate"><span class="pre">ATCO2SimData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCO2SimData.parse_transcripts"><code class="docutils literal notranslate"><span class="pre">ATCO2SimData.parse_transcripts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCO2SimData.transcription_corrections"><code class="docutils literal notranslate"><span class="pre">ATCO2SimData.transcription_corrections</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data.ATCOSimData"><code class="docutils literal notranslate"><span class="pre">ATCOSimData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCOSimData.parse_transcripts"><code class="docutils literal notranslate"><span class="pre">ATCOSimData.parse_transcripts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.ATCOSimData.transcription_corrections"><code class="docutils literal notranslate"><span class="pre">ATCOSimData.transcription_corrections</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data.ZCUATCDataset"><code class="docutils literal notranslate"><span class="pre">ZCUATCDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.ZCUATCDataset.parse_transcripts"><code class="docutils literal notranslate"><span class="pre">ZCUATCDataset.parse_transcripts()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-data.atccutils">Air-Traffic Control Complete Transcript Parsing Utility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data.atccutils.TerminalDirective"><code class="docutils literal notranslate"><span class="pre">TerminalDirective</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.COMMENT"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.COMMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.FROM"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.FROM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.QUOTE"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.QUOTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TAPE_HEADER"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TAPE_HEADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TAPE_TAIL"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TAPE_TAIL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TEXT"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TEXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TIMES"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TIMES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TO"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data.atccutils.TerminalDirective.TRANSMISSION_ID"><code class="docutils literal notranslate"><span class="pre">TerminalDirective.TRANSMISSION_ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data.atccutils.parse"><code class="docutils literal notranslate"><span class="pre">parse()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../models/api.html">Model Training and Testing API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/api.html">General Utility Functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ASR for Aviation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Processing and Analysis API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/data/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-processing-and-analysis-api">
+<h1>Data Processing and Analysis API<a class="headerlink" href="#data-processing-and-analysis-api" title="Link to this heading"></a></h1>
+<section id="base-data-class">
+<h2>Base Data Class<a class="headerlink" href="#base-data-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="data.Data">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.Data" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Top level Data class that provides several methods for processing and analyzing text datasets for NLP processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>random_seed</strong> – value to seed numpy random with.</p></li>
+<li><p><strong>dataset_name</strong> – Name of the dataset.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.concat">
+<span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">child_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#data.Data" title="data.utils.data.Data"><span class="pre">Data</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.Data.concat" title="Link to this definition"></a></dt>
+<dd><p>Concatenates data classes/sets. Extends the data array of parent object to
+include data from child object. Also updates any relevant common metadata
+fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>child_dataset</strong> – Dataset to concatenate into this object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.create_token_hist">
+<span class="sig-name descname"><span class="pre">create_token_hist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.figure.Figure</span></span></span><a class="headerlink" href="#data.Data.create_token_hist" title="Link to this definition"></a></dt>
+<dd><p>Calculates the number of utterances in each sample and generates a histogram.</p>
+<p>Utterance counts are determined by splitting each transcript on whitespace and
+calculating the length of the resulting list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>utterance_counts</strong> – (optional) <cite>list</cite> of <cite>ints</cite> for precalculated utterance counts.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a <cite>matplotlib.pyplot.Figure</cite> object aka final plot. Use plt.show() to render the plot.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.dump_manifest">
+<span class="sig-name descname"><span class="pre">dump_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.Data.dump_manifest" title="Link to this definition"></a></dt>
+<dd><p>Dump input data paths, labels, and metadata to <cite>outfile</cite> in NeMo manifest format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outfile</strong> – output path.</p></li>
+<li><p><strong>make_dirs</strong> – (optional) whether to make nonexistent parent directories in <code class="docutils literal notranslate"><span class="pre">outfile</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>return_list</strong> – Whether to return a list of strings instead of creating and dumping to a file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either <code class="docutils literal notranslate"><span class="pre">None</span></code> or a list of strings according to <code class="docutils literal notranslate"><span class="pre">return_list</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.from_iterable">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_iterable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#data.Data" title="data.utils.data.Data"><span class="pre">Data</span></a></span></span><a class="headerlink" href="#data.Data.from_iterable" title="Link to this definition"></a></dt>
+<dd><p>TODO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.from_manifest">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#data.Data" title="data.utils.data.Data"><span class="pre">Data</span></a></span></span><a class="headerlink" href="#data.Data.from_manifest" title="Link to this definition"></a></dt>
+<dd><p>Loads dataset info from a manifest file (if dataset has already been
+parsed into the NeMo manifest format). <cite>parse_transcripts</cite> does not need
+to be called after this function.</p>
+<p><strong>Use with caution</strong>: If the manifest files were generated on another system,
+it is highly likely that the file paths in the manifest are incorrect and will
+result it every other function/method to break or behave strangely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest_path</strong> – path to the manifest file</p></li>
+<li><p><strong>random_seed</strong> – random seed to initialize the class with (defaults to 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a data class initialized with the data in the manifest file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.generate_spec">
+<span class="sig-name descname"><span class="pre">generate_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_or_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.Data.generate_spec" title="Link to this definition"></a></dt>
+<dd><p>Generate a Mel-scale spectrogram from the index (in the data list
+attribute) or provided file path. If neither index or path is provided,
+a sample will be chosen at random.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index_or_path</strong> – either a file path or an index in the data list (<code class="docutils literal notranslate"><span class="pre">self.data</span></code>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either the path to the audio file or a Tuple of the audio file path and transcription.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.parse_transcripts">
+<span class="sig-name descname"><span class="pre">parse_transcripts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.Data.parse_transcripts" title="Link to this definition"></a></dt>
+<dd><p>This method must be overridden and implemented for each implementation of this class for datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary (from <cite>json</cite> module) with necessary data info e.g. annotations, file
+path, audio length, offset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.shuffle">
+<span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#data.Data.shuffle" title="Link to this definition"></a></dt>
+<dd><p>Wrapper function for np.random.shuffle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.Data.token_freq_analysis">
+<span class="sig-name descname"><span class="pre">token_freq_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.Data.token_freq_analysis" title="Link to this definition"></a></dt>
+<dd><p>Perform a token frequency analysis on the dataset (number of occurrences of each token throughout the dataset).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>normalize</strong> – (optional) whether to normalize values such that all frequencies add to 1.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> with tokens and number of occurrences of those tokens throughout the dataset.</p>
+</dd>
+</dl>
+<p>If <code class="docutils literal notranslate"><span class="pre">normalize</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> a dictionary with tokens corresponding to a list is returned e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mf">0.0486</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.Data.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#data.Data.data" title="Link to this definition"></a></dt>
+<dd><p>list of dictionary objects. Each object corresponds to one data sample and typically contains the following metadata:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">audio_filepath</span></code> (<strong>required</strong>) - path to the audio data (input data). Type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, absolute file path, conforms to <code class="docutils literal notranslate"><span class="pre">os.PathLike</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duration</span></code> (<strong>required</strong>) - duration, in seconds, of the audio data. Type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> (<strong>required</strong>) - transcript of the audio data (label/ground truth). Type: <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code> - if more than one sample is present in a single audio file, this field specifies its offset i.e. start time in the audio file. Type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.Data.dataset_name">
+<span class="sig-name descname"><span class="pre">dataset_name</span></span><a class="headerlink" href="#data.Data.dataset_name" title="Link to this definition"></a></dt>
+<dd><p>Dataset name, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data.Data.duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">duration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#data.Data.duration" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The cumulative duration of the data (in seconds).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data.Data.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#data.Data.name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of this dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data.Data.num_samples">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#data.Data.num_samples" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of samples in this dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data.Data.total_tokens">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#data.Data.total_tokens" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The total number of tokens in the transcripts of the dataset (labels).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data.Data.unique_tokens">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#data.Data.unique_tokens" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of unique tokens in the dataset. Repeating tokens are removed from this total.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="dataset-specific-classes">
+<h2>Dataset-specific Classes<a class="headerlink" href="#dataset-specific-classes" title="Link to this heading"></a></h2>
+<p>These classes extend the base class <code class="docutils literal notranslate"><span class="pre">Data</span></code> and implement methods specific to the dataset being parsed.</p>
+<p>The abstract function <code class="docutils literal notranslate"><span class="pre">parse_transcripts</span></code> from the <code class="docutils literal notranslate"><span class="pre">Data</span></code> class is implemented to parse all transcript
+and audio data into a common format (NeMo manifest format or <code class="docutils literal notranslate"><span class="pre">dict</span></code> objects that can be dumped directly
+to json strings).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="data.ATCCompleteData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.</span></span><span class="sig-name descname"><span class="pre">ATCCompleteData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.ATCCompleteData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#data.Data" title="data.utils.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<p>This class defines the data format of the Air Traffic Control Complete dataset and provides functions
+for parsing the data into a common format for automatic data analysis (see <code class="docutils literal notranslate"><span class="pre">Data</span></code>).</p>
+<p>This dataset is described in depth and can be obtained here: <a class="reference external" href="https://catalog.ldc.upenn.edu/LDC94S14A">https://catalog.ldc.upenn.edu/LDC94S14A</a></p>
+<p>The following attributes are defined in this class due to the way the Air Traffic Control Complete
+dataset is formatted and distributed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_root</strong> – root path of the dataset (start point for parsing).</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments to pass to the super class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data.ATCCompleteData.parse_transcripts">
+<span class="sig-name descname"><span class="pre">parse_transcripts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.ATCCompleteData.parse_transcripts" title="Link to this definition"></a></dt>
+<dd><p>Parse data indices in transcript files into dictionary objects with required info to be compatible with NeMo’s manifest format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of dictionary objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data.ATCCompleteData.sphere_to_wav">
+<span class="sig-name descname"><span class="pre">sphere_to_wav</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sphere_glob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.ATCCompleteData.sphere_to_wav" title="Link to this definition"></a></dt>
+<dd><p>Runs ffmpeg on each sphere file in <cite>sphere_glob</cite> to convert the
+files from the NIST Sphere format to the MS Wav format. Also resamples
+the audio to 16k.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sphere_glob</strong> – List of paths (strings) to sphere files to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of converted files</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.ATCCompleteData.transcript_corrections">
+<span class="sig-name descname"><span class="pre">transcript_corrections</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#data.ATCCompleteData.transcript_corrections" title="Link to this definition"></a></dt>
+<dd><p>there are a lot of typos in this dataset; this is the running list with corrections
+list of (typo, correction) pairs (tuples)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data.ATCO2SimData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.</span></span><span class="sig-name descname"><span class="pre">ATCO2SimData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.ATCO2SimData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#data.Data" title="data.utils.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<p>This class defines the format for the Air Traffic Control 2 dataset and implements
+functions to parse the data into a common format for data analysis.</p>
+<p>This dataset is described in more depth and can be obtained here: <a class="reference external" href="https://www.atco2.org/data">https://www.atco2.org/data</a></p>
+<p>See readme.txt in the root of the dataset for full description of data, including
+audio and transcription formats. Notes on the transcript format can be found in
+<code class="docutils literal notranslate"><span class="pre">parse_transcripts</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="data.ATCO2SimData.parse_transcripts">
+<span class="sig-name descname"><span class="pre">parse_transcripts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.ATCO2SimData.parse_transcripts" title="Link to this definition"></a></dt>
+<dd><p>Data is labeled in an XML hierarchy. <code class="docutils literal notranslate"><span class="pre">&lt;data&gt;</span></code> is the root node which is made up
+of <code class="docutils literal notranslate"><span class="pre">&lt;segments&gt;</span></code> which contain the following:</p>
+<ul>
+<li><p>start/end times – <code class="docutils literal notranslate"><span class="pre">&lt;start&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;end&gt;</span></code>, respectively</p></li>
+<li><p>speaker ID – <code class="docutils literal notranslate"><span class="pre">&lt;speaker&gt;</span></code></p></li>
+<li><p>speaker label – <code class="docutils literal notranslate"><span class="pre">&lt;speaker_label&gt;</span></code></p></li>
+<li><p>transcription – <code class="docutils literal notranslate"><span class="pre">&lt;text&gt;</span></code></p></li>
+<li><p>tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;correct_transcript&gt;</span></code> – do not use data instance if set to <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;correct_tagging&gt;</span></code> – do not use word tagging if set to <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;non_english&gt;</span></code> – do not use data instance if set to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>Transcription manual with full description here: <a class="reference external" href="https://www.spokendata.com/atco2/annotation-manual">https://www.spokendata.com/atco2/annotation-manual</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.ATCO2SimData.transcription_corrections">
+<span class="sig-name descname"><span class="pre">transcription_corrections</span></span><a class="headerlink" href="#data.ATCO2SimData.transcription_corrections" title="Link to this definition"></a></dt>
+<dd><p>Typo correction pairs. Tuples of two strings; left is the typo, right is the correction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data.ATCOSimData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.</span></span><span class="sig-name descname"><span class="pre">ATCOSimData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.ATCOSimData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#data.Data" title="data.utils.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<p>This class describes the format of the Air Traffic Control Simulation Corpus
+and defines functions for parsing the data into a common format for data analysis.</p>
+<p>This dataset is described in more depth and can be obtained here: <a class="reference external" href="https://www.spsc.tugraz.at/databases-and-tools/atcosim-air-traffic-control-simulation-speech-corpus.html">https://www.spsc.tugraz.at/databases-and-tools/atcosim-air-traffic-control-simulation-speech-corpus.html</a></p>
+<p>The data is shipped in iso (disk) format. To extract, mount the disk onto the file system and copy the data
+into another directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mount</span> <span class="o">-</span><span class="n">t</span> <span class="n">iso9660</span> <span class="o">-</span><span class="n">o</span> <span class="n">loop</span> <span class="n">atcosim</span><span class="o">.</span><span class="n">iso</span> <span class="n">atcosimmount</span>
+<span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="n">atcosimmount</span> <span class="o">.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_root</strong> – path to the root of the dataset.</p></li>
+<li><p><strong>kwarg</strong> – keyword arguments to pass to the super class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data.ATCOSimData.parse_transcripts">
+<span class="sig-name descname"><span class="pre">parse_transcripts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.ATCOSimData.parse_transcripts" title="Link to this definition"></a></dt>
+<dd><p>Parse data indices in transcript files into dictionary objects with required info to be compatible with NeMo’s manifest format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of dictionary objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.ATCOSimData.transcription_corrections">
+<span class="sig-name descname"><span class="pre">transcription_corrections</span></span><a class="headerlink" href="#data.ATCOSimData.transcription_corrections" title="Link to this definition"></a></dt>
+<dd><p>typo correction pairs; left is the typo, right is the corrected text</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data.ZCUATCDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.</span></span><span class="sig-name descname"><span class="pre">ZCUATCDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.ZCUATCDataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#data.Data" title="data.utils.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<p>Data is organized into <cite>trs</cite> files (follows an XML standard). Details in <cite>~parse_transcripts</cite> function.</p>
+<p>Dataset can be obtained here: <a class="reference external" href="https://lindat.mff.cuni.cz/repository/xmlui/handle/11858/00-097C-0000-0001-CCA1-0">https://lindat.mff.cuni.cz/repository/xmlui/handle/11858/00-097C-0000-0001-CCA1-0</a></p>
+<dl class="simple">
+<dt>Notes:</dt><dd><ul class="simple">
+<li><p>As useful as this dataset may be, the transcriptions and their format are so convoluted and different from
+the other datasets that it may not be worth using</p></li>
+<li><p>There are a lot of non-english tokens in this data that I am not sure how to filter out</p></li>
+<li><p>All number readouts are space separated</p></li>
+<li><p><strong>I’ll keep working on this script to normalize the data, but I’m exluding it from the training data for now</strong></p></li>
+<li><dl class="simple">
+<dt>Examples of problematic lines:</dt><dd><ul>
+<li><p>Austrian 1 2 8 X contact (Vienna(vín)) 1 3 1 . 3 5 0 servus</p></li>
+<li><p>Air Malta (9(najn)) 6 9 1 contact Praha 1 2 7 . 1 2 5 go+</p></li>
+<li><p>(Praha(Prague)) 1 3 5 1 3 5  7 9</p></li>
+<li><p>+el 3 8 0 plea+</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>random_seed</strong> – value to seed numpy random with.</p></li>
+<li><p><strong>dataset_name</strong> – Name of the dataset.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data.ZCUATCDataset.parse_transcripts">
+<span class="sig-name descname"><span class="pre">parse_transcripts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.ZCUATCDataset.parse_transcripts" title="Link to this definition"></a></dt>
+<dd><p>Since the transcript files correspond to wav files for ASR tasks, the transcriptions are organized into
+&lt;Sync&gt; elements with time attributes e.g. &lt;Sync time=”1.900”/&gt;. In this case the time attribute is ignored
+and only the text is extracted. The node hierarchy is as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;Trans&gt; – root node</p></li>
+<li><p>&lt;Episode&gt; – empty tag (organizational?)</p></li>
+<li><p>&lt;Section&gt; – metadata, similar to &lt;Turn&gt;</p></li>
+<li><p>&lt;Turn&gt; – contains metadata about the duration of the audio file (attributes), serves as parent for &lt;Sync&gt; nodes</p></li>
+<li><p>&lt;Sync&gt; – holds the time (attribute) and text info (tail)</p></li>
+</ul>
+</div></blockquote>
+<p>There are also transcriber annotations present in the text, usually following a form similar to other transcripts
+for example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>[air]</p></li>
+<li><p>[ground]</p></li>
+<li><p>[unintelligible]</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-data.atccutils">
+<span id="air-traffic-control-complete-transcript-parsing-utility"></span><h2>Air-Traffic Control Complete Transcript Parsing Utility<a class="headerlink" href="#module-data.atccutils" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data.atccutils.</span></span><span class="sig-name descname"><span class="pre">TerminalDirective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data.atccutils.TerminalDirective" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of keys that are used in transcripts in Air-Traffic Control Complete. These
+are all the possible values that can occur as keys in the dictionaries returned by <code class="docutils literal notranslate"><span class="pre">parse</span></code>.</p>
+<p>Each transcription is a list of lists (in Lisp syntax). The first value is a key which
+describes the type of data that occurs from the second value (on onward until the
+closing parenthetical).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.COMMENT">
+<span class="sig-name descname"><span class="pre">COMMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COMMENT'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.COMMENT" title="Link to this definition"></a></dt>
+<dd><p>comment(s) from transcriber e.g. (COMMENT “…”)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.FROM">
+<span class="sig-name descname"><span class="pre">FROM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FROM'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.FROM" title="Link to this definition"></a></dt>
+<dd><p>indicates party sending the transmission e.g. (FROM AAABBBB)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.QUOTE">
+<span class="sig-name descname"><span class="pre">QUOTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'QUOTE'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.QUOTE" title="Link to this definition"></a></dt>
+<dd><p>an escape sequence for contractions since the ‘ character has special meaning in LISP (denotes a list) e.g. (TEXT WE (QUOTE LL)) -&gt; WE’LL</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TAPE_HEADER">
+<span class="sig-name descname"><span class="pre">TAPE_HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TAPE-HEADER'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TAPE_HEADER" title="Link to this definition"></a></dt>
+<dd><p>metadata for the tape, also indicates that start of the tape e.g. (TAPE-HEADER “…”)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TAPE_TAIL">
+<span class="sig-name descname"><span class="pre">TAPE_TAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TAPE-TAIL'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TAPE_TAIL" title="Link to this definition"></a></dt>
+<dd><p>meatdata for the tape, also indicates the end of the tape e.g. (TAPE-TAIL “…”)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TEXT">
+<span class="sig-name descname"><span class="pre">TEXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TEXT'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TEXT" title="Link to this definition"></a></dt>
+<dd><p>text transcription of the transmission e.g. (TEXT …)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TIMES">
+<span class="sig-name descname"><span class="pre">TIMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIMES'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TIMES" title="Link to this definition"></a></dt>
+<dd><p>start/end times of the transmission e.g. (TIMES start end)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TO">
+<span class="sig-name descname"><span class="pre">TO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TO'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TO" title="Link to this definition"></a></dt>
+<dd><p>indicates party receiving the transmission e.g. (TO AAABBBB)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data.atccutils.TerminalDirective.TRANSMISSION_ID">
+<span class="sig-name descname"><span class="pre">TRANSMISSION_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NUM'</span></em><a class="headerlink" href="#data.atccutils.TerminalDirective.TRANSMISSION_ID" title="Link to this definition"></a></dt>
+<dd><p>unspecified identifier included in some of the tapes, usualy a unique identifier
+based on the tape name, a dash, and a number representing the transmission
+i.e. 1 for the first transmission, 2 for the second, etc.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.atccutils.parse">
+<span class="sig-prename descclassname"><span class="pre">data.atccutils.</span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#data.atccutils.parse" title="Link to this definition"></a></dt>
+<dd><p>Parse the given document and return a list of dictionaries with keys and values corresponding to data
+found in the transcripts/metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lines</strong> – list of lines in the document. These will be concatenated and parsed, with new line
+characters removed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">dict</span></code> objects with keys corresponding to transcript metadata keys (see
+<code class="docutils literal notranslate"><span class="pre">TerminalDirective</span></code>) and values corresponding to actual metadata.</p>
+</dd>
+</dl>
+<p>Example of calling the <code class="docutils literal notranslate"><span class="pre">parse</span></code> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">atccutils</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;transcript.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">transcript_data</span> <span class="o">=</span> <span class="n">atccutils</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../models/models.html" class="btn btn-neutral float-left" title="Model Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../models/api.html" class="btn btn-neutral float-right" title="Model Training and Testing API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Aaron Van De Brook.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

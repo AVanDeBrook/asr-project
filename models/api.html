@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Training and Testing API &mdash; ASR for Aviation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="General Utility Functions" href="../utils/api.html" />
+    <link rel="prev" title="Data Processing and Analysis API" href="../data/api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ASR for Aviation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../data/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Model Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data/api.html">Data Processing and Analysis API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Training and Testing API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#base-model-class">Base Model Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.fit"><code class="docutils literal notranslate"><span class="pre">Model.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.load_config"><code class="docutils literal notranslate"><span class="pre">Model.load_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.test"><code class="docutils literal notranslate"><span class="pre">Model.test()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.testing_setup"><code class="docutils literal notranslate"><span class="pre">Model.testing_setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.training_setup"><code class="docutils literal notranslate"><span class="pre">Model.training_setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.Model.name"><code class="docutils literal notranslate"><span class="pre">Model.name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-models.jasper">Jasper-based Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#references">References:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.jasper.PretrainedFineTunedJasper"><code class="docutils literal notranslate"><span class="pre">PretrainedFineTunedJasper</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.jasper.PretrainedJasper"><code class="docutils literal notranslate"><span class="pre">PretrainedJasper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.jasper.PretrainedJasper.fit"><code class="docutils literal notranslate"><span class="pre">PretrainedJasper.fit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-models.quartznet">QuartzNet-based Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">References:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.quartznet.PretrainedFineTunedQuartzNet"><code class="docutils literal notranslate"><span class="pre">PretrainedFineTunedQuartzNet</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.quartznet.PretrainedQuartzNet"><code class="docutils literal notranslate"><span class="pre">PretrainedQuartzNet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.quartznet.PretrainedQuartzNet.fit"><code class="docutils literal notranslate"><span class="pre">PretrainedQuartzNet.fit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-models.oob">Randomly Initialized Models (aka train from scratch)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.oob.RandomInitCTC"><code class="docutils literal notranslate"><span class="pre">RandomInitCTC</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/api.html">General Utility Functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ASR for Aviation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Model Training and Testing API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/models/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="model-training-and-testing-api">
+<h1>Model Training and Testing API<a class="headerlink" href="#model-training-and-testing-api" title="Link to this heading"></a></h1>
+<section id="base-model-class">
+<h2>Base Model Class<a class="headerlink" href="#base-model-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nemo.collections.asr.models.EncDecCTCModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Model" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Wrapper class for automating training and comparing multiple models. Will also help keep things consistent if different APIs/frameworks are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>checkpoint_path</strong> – path of the model checkpoint (these can be used interchangebly), defaults to <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>.</p></li>
+<li><p><strong>model_class</strong> – base class of the model for loading/restoring/saving to and from checkpoints, defaults to <code class="docutils literal notranslate"><span class="pre">EncDecCTCModel</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Model.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#models.Model.fit" title="Link to this definition"></a></dt>
+<dd><p>Start the training process (for a NeMo model).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Model.load_config">
+<span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#models.Model.load_config" title="Link to this definition"></a></dt>
+<dd><p>Loads the model config file from the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> – Path (relative or absolute) to the config file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resulting dictionary (from loading YAML file) as
+an <code class="docutils literal notranslate"><span class="pre">omegaconf.DictCOnfig</span></code> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Model.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testing_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'train'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'test'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'test'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prediction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#models.Model.test" title="Link to this definition"></a></dt>
+<dd><p>Tests the model and finds the average word error rate (WER) over test samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>testing_set</strong> – the dataset on which to test the model; can be either
+<code class="docutils literal notranslate"><span class="pre">'train'</span></code> or <code class="docutils literal notranslate"><span class="pre">'test'</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">'test'</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average WER over the test set (set specified by <code class="docutils literal notranslate"><span class="pre">testing_set</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Model.testing_setup">
+<span class="sig-name descname"><span class="pre">testing_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_manifest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Model.testing_setup" title="Link to this definition"></a></dt>
+<dd><p>Loads and sets up the testing data for the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>test_manifest_path</strong> – path to the testing manifest data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Model.training_setup">
+<span class="sig-name descname"><span class="pre">training_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">training_manifest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_manifest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">trainer_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Model.training_setup" title="Link to this definition"></a></dt>
+<dd><p>Checks for valid manifest paths and sets up data loaders for the training,
+testing, and validation datasets.</p>
+<p>Sets up a pytorch lightning trainer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>training_manifest_path</strong> – Path to the training manifest</p></li>
+<li><p><strong>testing_manifest_path</strong> – Path to the testing manifest</p></li>
+<li><p><strong>validation_manifest_path</strong> – Path to the validation manifest</p></li>
+<li><p><strong>trainer_args</strong> – keyword arguments for the pytorch lightning <code class="docutils literal notranslate"><span class="pre">Trainer</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="models.Model.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#models.Model.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the model aka model checkpoint.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.jasper">
+<span id="jasper-based-models"></span><h2>Jasper-based Models<a class="headerlink" href="#module-models.jasper" title="Link to this heading"></a></h2>
+<p>The classes in this module implement three permutations of The Jasper ASR model. It
+is a Deep Time-Delay Neural Network (TDNN) comprised of block of one-dimensional
+convolutional layers.</p>
+<p>All Jasper models contain B blocks and R sub-blocks. Each sub-block contains a
+one-dimensional convolution, batch normalization, ReLU activation, and dropout.</p>
+<p>This model was trained and tested on the LibriSpeech corpus (conversational english).
+Pretrained model checkpoints are also trained/tested on the LibriSpeech dataset.</p>
+<p>See class descriptions for implementation specific deviations.</p>
+<section id="references">
+<h3>References:<a class="headerlink" href="#references" title="Link to this heading"></a></h3>
+<p>[0] <a class="reference external" href="https://arxiv.org/abs/1904.03288">https://arxiv.org/abs/1904.03288</a></p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.jasper.PretrainedFineTunedJasper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.jasper.</span></span><span class="sig-name descname"><span class="pre">PretrainedFineTunedJasper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretrained_model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stt_en_jasper10x5dr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.jasper.PretrainedFineTunedJasper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.Model" title="models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pretrained_model_name</strong> – name of the pretrained model to download from NGC.</p></li>
+<li><p><strong>checkpoint_path</strong> – path to the model checkpoint for loading/saving.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.jasper.PretrainedJasper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.jasper.</span></span><span class="sig-name descname"><span class="pre">PretrainedJasper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretrained_model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stt_en_jasper10x5dr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.jasper.PretrainedJasper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.Model" title="models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+<p>This class instantiates a pretrained Jasper model (without fine-tuning on
+additional data) and tests it on the designated test data to obtain a
+baseline WER.</p>
+<p>Model name: <code class="docutils literal notranslate"><span class="pre">&quot;stt_en_jasper_10x5dr&quot;</span></code></p>
+<p>Tokenizer: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pretrained_model_name</strong> – name of the pretrained model to download from NGC.</p></li>
+<li><p><strong>checkpoint_name</strong> – name of the model checkpoint for loading/saving.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.jasper.PretrainedJasper.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.jasper.PretrainedJasper.fit" title="Link to this definition"></a></dt>
+<dd><p>Overriding since the goal of this class is just to establish a baseline WER
+before fine tuning or training from scratch</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.quartznet">
+<span id="quartznet-based-models"></span><h2>QuartzNet-based Models<a class="headerlink" href="#module-models.quartznet" title="Link to this heading"></a></h2>
+<p>The classes in this module implement two permutations of the Quartznet model. It is
+an extension of Jasper with separable convolutions and larger filters. Only two are
+trained since the third permutation would be a randomly initialized model identical
+to Jasper.</p>
+<p>QuartzNet models are made up of blocks and convolutional sub-blocks (B and R,
+respectively). Each sub-block contains a one-dimensional separable convolution,
+batch normalization, ReLU activation and dropout.</p>
+<p>QuartzNet was trained and tested on six datasets: LibriSpeech, Mozilla Common Voice,
+Wall Street Journal, Fisher, Switchboard, and NSC Singapore English (all conversational
+English).</p>
+<p>See class descriptions for implementation specific deviations.</p>
+<section id="id1">
+<h3>References:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>[0] <a class="reference external" href="https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/asr/models.html#quartznet">https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/stable/asr/models.html#quartznet</a>
+[1] <a class="reference external" href="https://arxiv.org/abs/1910.10261">https://arxiv.org/abs/1910.10261</a>
+[2] <a class="reference external" href="https://catalog.ngc.nvidia.com/orgs/nvidia/models/nemospeechmodels">https://catalog.ngc.nvidia.com/orgs/nvidia/models/nemospeechmodels</a></p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.quartznet.PretrainedFineTunedQuartzNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.quartznet.</span></span><span class="sig-name descname"><span class="pre">PretrainedFineTunedQuartzNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretrained_model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'QuartzNet15x5Base-En'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.quartznet.PretrainedFineTunedQuartzNet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.Model" title="models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pretrained_model_name</strong> – name of the pretrained model to download from NGC.</p></li>
+<li><p><strong>checkpoint_name</strong> – name of the model checkpoint for loading/saving.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.quartznet.PretrainedQuartzNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.quartznet.</span></span><span class="sig-name descname"><span class="pre">PretrainedQuartzNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretrained_model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'QuartzNet15x5Base-En'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.quartznet.PretrainedQuartzNet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.Model" title="models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+<p>This class instantiates a pretrained QuartzNet model (without fine-tuning on
+additional data) and tests it on the designated test data to obtain a
+baseline WER).</p>
+<p>Model name: <code class="docutils literal notranslate"><span class="pre">&quot;QuartzNet15x5Base-En&quot;</span></code></p>
+<p>Tokenizer: none</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pretrained_model_name</strong> – name of the pretrained model to download from NGC.</p></li>
+<li><p><strong>checkpoint_name</strong> – name of the model checkpoint for loading/saving.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.quartznet.PretrainedQuartzNet.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.quartznet.PretrainedQuartzNet.fit" title="Link to this definition"></a></dt>
+<dd><p>Overriding since the goal of this class is just to establish a baseline
+WER before fine tuning or training from scratch.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.oob">
+<span id="randomly-initialized-models-aka-train-from-scratch"></span><h2>Randomly Initialized Models (aka train from scratch)<a class="headerlink" href="#module-models.oob" title="Link to this heading"></a></h2>
+<p>TODO: module description</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.oob.RandomInitCTC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.oob.</span></span><span class="sig-name descname"><span class="pre">RandomInitCTC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.oob.RandomInitCTC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.Model" title="models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>checkpoint_name</strong> – checkpoint to load from and/or store to</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../data/api.html" class="btn btn-neutral float-left" title="Data Processing and Analysis API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/api.html" class="btn btn-neutral float-right" title="General Utility Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Aaron Van De Brook.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
