@@ -39,6 +39,8 @@ pip install nemo_toolkit[all]
 
 Note that all code needs to be written and run from `source/asr_project`. Add a new file in that folder to run individual experiments.
 
+A minimal example is provided in `source/asr_project/example.py`.
+
 ## Training, Testing, and Inference Usage
 
 To instantiate a model, a subclass of `Model` can be used. For example, to instantiate a pretrained Jasper model, the following can be used:
